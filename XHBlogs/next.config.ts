@@ -1,20 +1,24 @@
 import type { NextConfig } from "next";
 
+const isStaticExport =
+  process.env.STATIC_EXPORT === "1" ||
+  process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
+
 const nextConfig: NextConfig = {
-  // 自托管（Debian 等）用 standalone 精简运行时；勿与 output: 'export' 同时开启
-  output: "standalone",
+  // STATIC_EXPORT=1 → pure HTML for nginx; otherwise standalone for Node self-host
+  output: isStaticExport ? "export" : "standalone",
 
-  // 🚨 关掉纯静态导出，保留 API 路由（Vercel / Node 自托管均需要）
-  // output: 'export',
-
-  // 🚨 Vercel / 反代场景不强制 trailingSlash，避免 API 路径匹配问题
-  // trailingSlash: true,
+  ...(isStaticExport
+    ? {
+        trailingSlash: true,
+      }
+    : {}),
 
   images: {
     unoptimized: true,
   },
   typescript: {
-    ignoreBuildErrors: true, // 忽略 TS 错误，方便快速部署
+    ignoreBuildErrors: true,
   },
 };
 

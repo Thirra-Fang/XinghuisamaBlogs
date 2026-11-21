@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 // 🌟 引入定制的无干扰留言板组件与站点配置
 import LabComments from '../../components/LabComments';
+import { isStaticExport } from '../../lib/staticExport';
 import { siteConfig } from '../../siteConfig';
 
 // 🌟 引入相册与友链数据以统计徽章 (请确保路径正确，如果报错请调整 ../ 的数量)
@@ -377,7 +378,7 @@ export default function AlchemyLab({ posts = [], chatters = [], moments = [] }: 
         if (isMounted) setRealWishes([]);
       } catch (err) { if (isMounted) setRealWishes([]); }
     };
-    fetchGitalkComments();
+    if (!isStaticExport) fetchGitalkComments();
     return () => { isMounted = false; };
   }, [currentMonthStr, mounted]);
 
@@ -691,7 +692,7 @@ export default function AlchemyLab({ posts = [], chatters = [], moments = [] }: 
          <h2 className="text-xl font-black text-[#8b6b4a] mb-2 font-serif text-center uppercase tracking-widest border-b border-[#8b6b4a]/30 pb-4">
             「 {formattedMonth} 的访客留言簿 」
          </h2>
-         <LabComments key={`gitalk-${currentMonthStr}`} pageId={`workshop-${currentMonthStr}`} />
+         {!isStaticExport && <LabComments key={`gitalk-${currentMonthStr}`} pageId={`workshop-${currentMonthStr}`} />}
       </div>
 
     </motion.div>

@@ -16,6 +16,7 @@ import ClientSocials from '../../../components/ClientSocials';
 import SidebarLyric from '../../../components/SidebarLyric';
 import BackButton from '../../../components/BackButton';
 import Comments from '../../../components/Comments';
+import { isStaticExport } from '../../../lib/staticExport';
 
 export async function generateStaticParams() {
   const chattersDirectory = path.join(process.cwd(), 'chatters');
@@ -296,7 +297,7 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
               <ClientSocials />
             </div>
 
-            <SidebarLyric />
+            {!isStaticExport && <SidebarLyric />}
 
             <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl">
               <div className="flex justify-between items-center mb-6">

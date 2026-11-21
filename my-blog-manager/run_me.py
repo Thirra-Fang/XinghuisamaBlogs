@@ -7,13 +7,88 @@ import shutil
 import subprocess
 import sys
 import traceback
+import venv
 
 ROOT = Path(__file__).resolve().parent
+VENV_DIR = ROOT / ".venv"
 PACKAGES = {
     "webview": "pywebview", "fastapi": "fastapi", "uvicorn": "uvicorn",
     "multipart": "python-multipart", "requests": "requests", "yaml": "PyYAML",
     "markdown": "markdown", "markdownify": "markdownify", "httpx": "httpx",
 }
+
+
+def _venv_python() -> Path:
+    if os.name == "nt":
+        return VENV_DIR / "Scripts" / "python.exe"
+    return VENV_DIR / "bin" / "python"
+
+
+def _has_pip(executable: str) -> bool:
+    try:
+        r = subprocess.run(
+            [executable, "-m", "pip", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return r.returncode == 0
+    except OSError:
+        return False
+
+
+def _is_system_python(executable: str) -> bool:
+    path = Path(executable).resolve()
+    # Common system locations (Arch/CachyOS, Debian, etc.)
+    system_roots = ("/usr/bin", "/bin", "/usr/local/bin")
+    return any(str(path).startswith(root + "/") or str(path) == root + "/python" or str(path).startswith(root + "/python")
+               for root in system_roots) and ".venv" not in path.parts
+
+
+def _in_project_venv() -> bool:
+    # Do not compare resolved executable paths: .venv/bin/python often symlinks to /usr/bin/python.
+    try:
+        return Path(sys.prefix).resolve() == VENV_DIR.resolve()
+    except OSError:
+        return False
+
+
+def ensure_project_venv(report) -> str:
+    """Prefer project .venv so Arch EXTERNALLY-MANAGED / missing system pip work."""
+    py = _venv_python()
+
+    # Already running inside this project's venv
+    if _in_project_venv():
+        if not _has_pip(sys.executable):
+            raise RuntimeError(f"Project venv exists but pip is missing: {sys.executable}")
+        return sys.executable
+
+    # Always prefer project venv when on system Python, missing pip, or venv already exists
+    need_venv = (
+        _is_system_python(sys.executable)
+        or not _has_pip(sys.executable)
+        or (py.is_file() and _has_pip(str(py)))
+    )
+    if not need_venv:
+        return sys.executable
+
+    if not py.is_file():
+        report(f"Creating project virtualenv at {VENV_DIR} ...")
+        # system_site_packages: Arch provides gi/webkit via pacman (python-gobject)
+        venv.create(VENV_DIR, with_pip=True, clear=False, system_site_packages=True)
+        py = _venv_python()
+        if not py.is_file():
+            raise RuntimeError(
+                "Failed to create .venv. On Arch/CachyOS try: sudo pacman -S python-pip"
+            )
+
+    if not _has_pip(str(py)):
+        raise RuntimeError(
+            f"No pip in {py}. Recreate with: /usr/bin/python -m venv --clear .venv"
+        )
+
+    report(f"Using project venv: {py}")
+    return str(py)
 
 
 def main(log):
@@ -46,6 +121,16 @@ def main(log):
     if not match or tuple(map(int, match.groups())) < (20, 9, 0):
         raise RuntimeError(f"Node.js 20.9 or newer is required; found {version}.")
     report(f"Node.js {version}: {node}")
+
+    python_exe = ensure_project_venv(report)
+
+    # Re-exec into venv so importlib checks and launcher use the same interpreter.
+    # Compare via sys.prefix, not resolved executable (venv python often symlinks to /usr/bin/python).
+    if not _in_project_venv():
+        report("Re-launching under venv Python...")
+        env = os.environ.copy()
+        env.update(PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1")
+        raise SystemExit(subprocess.call([python_exe, "-u", str(ROOT / "run_me.py")], cwd=ROOT, env=env))
 
     if not (ROOT / "node_modules/next/dist/bin/next").is_file():
         npm = shutil.which("npm.cmd" if os.name == "nt" else "npm")

@@ -10,6 +10,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Html } from '@react-three/drei';
 
 import LabComments from '../../components/LabComments';
+import { isStaticExport } from '../../lib/staticExport';
 import { siteConfig } from '../../siteConfig';
 
 import { albums } from '../../data/albums';
@@ -517,7 +518,7 @@ export default function DijiangModel({ posts = [], chatters = [], moments = [] }
         if (isMounted) setRealWishes([]);
       }
     };
-    fetchGitalkComments();
+    if (!isStaticExport) fetchGitalkComments();
     return () => { isMounted = false; };
   }, [currentMonthStr, mounted]);
 
@@ -870,7 +871,7 @@ export default function DijiangModel({ posts = [], chatters = [], moments = [] }
             <span className="text-[10px] text-slate-500 font-mono">ENDFIELD RECEPTION CENTER</span>
             「 {formattedMonth} 的通讯接收枢纽 」
          </h2>
-         <LabComments key={`gitalk-${currentMonthStr}`} pageId={`workshop-${currentMonthStr}`} />
+         {!isStaticExport && <LabComments key={`gitalk-${currentMonthStr}`} pageId={`workshop-${currentMonthStr}`} />}
       </div>
 
     </motion.div>

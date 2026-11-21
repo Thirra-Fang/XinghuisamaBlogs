@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, PanInfo } from 'framer-motion';
 import { siteConfig } from '../siteConfig';
+import { isStaticExport } from '../lib/staticExport';
 
 export default function Navbar() {
   const [showNav, setShowNav] = useState(true);
@@ -73,7 +74,7 @@ export default function Navbar() {
     { name: '项目', href: '/projects' },
     { name: '归档', href: '/timeline' },
     { name: '照片墙', href: '/photowall' },
-    { name: '音乐', href: '/music' },
+    ...(!isStaticExport ? [{ name: '音乐', href: '/music' }] : []),
     { name: '灵境', href: '/tree' },
     { name: '说说', href: '/moments' },
     { name: '杂谈', href: '/chatter' },
