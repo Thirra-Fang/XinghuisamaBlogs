@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 🚨 核心修改 1：关掉纯静态导出，让 Vercel 帮你把 API 跑起来！
+  // 自托管（Debian 等）用 standalone 精简运行时；勿与 output: 'export' 同时开启
+  output: "standalone",
+
+  // 🚨 关掉纯静态导出，保留 API 路由（Vercel / Node 自托管均需要）
   // output: 'export',
 
-  // 🚨 核心修改 2：Vercel 不需要强制加斜杠，关掉它能避免很多 API 路径匹配错误
+  // 🚨 Vercel / 反代场景不强制 trailingSlash，避免 API 路径匹配问题
   // trailingSlash: true,
 
-  // 下面这些可以保留
   images: {
     unoptimized: true,
   },

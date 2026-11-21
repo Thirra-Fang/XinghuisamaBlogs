@@ -1,3 +1,7 @@
+## Unreleased
+
+- 支持 Debian 自托管：`XHBlogs` 启用 Next.js `standalone`，新增 `deploy/` 构建与 rsync 脚本、systemd/nginx 模板与技术文档；根 README 增加自托管入口。推荐在 CachyOS 等 Linux 机构建，服务器只运行 Node + nginx（443/80 → `127.0.0.1:3000`）。
+
 ## 0.4.5 - 2026-11-11
 
 - 基于 Kai0809v 的 PR #30 加入大肥鱼，与煤球二选一。支持拖动、调整大小、点击动画、复用已有的手动聊天，以及可选的浏览器本地待办和固定台词。改用透明画布，避免切换动画时偶发白框。

@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# XHBlogs（公网站点）
 
-## Getting Started
+本目录是面向访客的 Next.js 博客前端（含 `/api/*`）。本地写作与同步请使用同级仓库中的 `my-blog-manager` 控制台。
 
-First, run the development server:
+## 本地开发
+
+需要 Node.js **≥ 20.9**。
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+浏览器打开 [http://localhost:3000](http://localhost:3000)。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 生产构建
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Vercel**：将本目录作为 Next.js 项目导入即可（见仓库根目录 README）。
+- **自托管（Debian 等）**：启用 `output: 'standalone'`，在 Linux 构建机打包后 rsync 到服务器。完整步骤见 **[deploy/README.md](deploy/README.md)**。
 
-## Learn More
+```bash
+# 在 CachyOS / Linux 构建机上
+./deploy/build-release.sh
+./deploy/rsync-deploy.sh user@your-debian-host
+```
 
-To learn more about Next.js, take a look at the following resources:
+请勿将 Windows 下的 `node_modules` 拷贝到 Linux。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 相关文档
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 仓库总览与控制台：[`../README.md`](../README.md)
+- 自托管技术说明：[`deploy/README.md`](deploy/README.md)
+- 环境变量示例：[`.env.production.example`](.env.production.example)

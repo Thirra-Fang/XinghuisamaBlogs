@@ -1,0 +1,28 @@
+[Unit]
+Description=XHBlogs Next.js (standalone)
+After=network.target
+
+[Service]
+Type=simple
+User=xhblogs
+Group=xhblogs
+WorkingDirectory=/var/www/xhblogs/app
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3000
+EnvironmentFile=-/var/www/xhblogs/env/production
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+# Soft cap so a spike is less likely to starve other services (e.g. et) on 2G hosts
+MemoryMax=512M
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/xhblogs/app
+
+[Install]
+WantedBy=multi-user.target

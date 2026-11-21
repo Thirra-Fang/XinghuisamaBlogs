@@ -109,6 +109,8 @@ The script will automatically detect and install the required dependencies. Once
 #### ② Deploy Your Blog to Vercel
 
 > **Tip**: This tutorial primarily demonstrates how to deploy the project to Vercel, as Vercel provides native support for the Next.js framework.
+>
+> **Optional: self-host on Debian** (without Vercel): build the `XHBlogs` standalone bundle on a Linux machine (e.g. CachyOS), rsync it to the server, and put nginx on public ports 443/80 in front of Node on `127.0.0.1:3000`. Keep the local console on your writing PC; do not run `my-blog-manager` or `npm run build` on a small VPS. Full steps, scripts, and systemd/nginx templates: **[XHBlogs/deploy/README.md](XHBlogs/deploy/README.md)**.
 > **Prerequisite**: Please ensure Git is installed and you have a GitHub account. **Be sure to follow the upcoming steps in order!**
 
 > **Please ensure you have completed the following operations**:

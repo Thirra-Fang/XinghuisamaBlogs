@@ -149,7 +149,9 @@
 
 > **提示**：本教程主要演示如何将项目部署至 Vercel，因为 Vercel 对 Next.js 框架有着最顶级的原生支持。
 >
-> **前提**：请确保已安装 Git，并拥有一个 GitHub 账号。**接下来的步骤请务必按顺序操作！**
+> **可选：自托管到 Debian**（不经过 Vercel）：在 Linux 构建机（如 CachyOS）打包 `XHBlogs` 的 standalone 产物，rsync 到服务器，用 nginx（公网 443/80）反代本机 Node（`127.0.0.1:3000`）。控制台仍在本机使用，服务器不跑 `my-blog-manager`，也不在小内存机器上执行 `npm run build`。完整步骤、脚本与 systemd/nginx 模板见 **[XHBlogs/deploy/README.md](XHBlogs/deploy/README.md)**。
+>
+> **前提（Vercel 路径）**：请确保已安装 Git，并拥有一个 GitHub 账号。**接下来的步骤请务必按顺序操作！**
 
 > **请确保你已完成以下操作**：
 >
