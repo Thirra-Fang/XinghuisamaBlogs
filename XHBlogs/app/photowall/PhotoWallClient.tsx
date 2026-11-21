@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import { albums, Album } from '../../data/albums';
@@ -12,8 +12,16 @@ export default function PhotoWallClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const searchReady = useRef(false);
 
   useEffect(() => {
+    // Skip fade on first mount — only animate when the user changes the query.
+    if (!searchReady.current) {
+      searchReady.current = true;
+      setActiveQuery(searchQuery.toLowerCase());
+      return;
+    }
+
     setIsTransitioning(true);
 
     const timer = setTimeout(() => {
@@ -47,8 +55,8 @@ export default function PhotoWallClient() {
         <div className="w-full max-w-7xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
 
           {!currentAlbum && (
-            <div className="animate-fade-in-up">
-              <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+            <div>
+              <div className="animate-fade-in-up flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
                 <div>
                   <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-widest mb-2 transition-colors duration-700">光影画廊</h1>
                   <p className="text-slate-600 dark:text-slate-400 font-medium tracking-wider transition-colors duration-700">定格时间，封存泰拉与现实的每一次心跳</p>

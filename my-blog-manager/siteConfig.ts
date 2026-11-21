@@ -35,14 +35,14 @@ export const siteConfig = {
   photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   social: {
-    github: "",
+    github: "https://github.com/heiehiehi",
     gitee: "",
-    bilibili: "",
-    netease: "",
+    bilibili: "https://space.bilibili.com/350045157",
+    netease: "https://music.163.com/#/user/home?id=267181997",
     google: "",
-    email: "",
-    qq: "",
-    wechat: "",
+    email: "1124533793@qq.com",
+    qq: "1124533793",
+    wechat: "XingHuisama",
   },
   counts: {
     photos: 128, // 照片墙数量可以手动写死或动态计算
