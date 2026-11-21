@@ -15,6 +15,7 @@ PACKAGES = {
     "webview": "pywebview", "fastapi": "fastapi", "uvicorn": "uvicorn",
     "multipart": "python-multipart", "requests": "requests", "yaml": "PyYAML",
     "markdown": "markdown", "markdownify": "markdownify", "httpx": "httpx",
+    "boto3": "boto3",
 }
 
 

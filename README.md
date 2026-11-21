@@ -4,6 +4,15 @@
 
 本指南将带你从零开始，轻松部署并使用 XHBlogs。
 
+## 原作者与本仓库说明
+
+- **原作者**：XingHuiSama  
+- **原项目**：[heiehiehi/XinghuisamaBlogs](https://github.com/heiehiehi/XinghuisamaBlogs)  
+- **许可**：CC BY-NC 4.0（须署名、非商业）  
+
+本仓库（若为 fork / 二次配置）在保留上述署名与许可的前提下使用；请勿删除 LICENSE 与对上游贡献者的致谢。  
+涉密配置（Cloudflare R2、Gitalk Secret 等）请放本机目录（例如 `~/.config/AboutVPS/r2.env`），**不要**提交到 git。
+
 ---
 ## 语言
 

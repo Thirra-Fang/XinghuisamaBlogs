@@ -36,11 +36,13 @@ export const siteConfig = {
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   social: {
     github: "",
+    gitee: "",
     bilibili: "",
     netease: "",
+    google: "",
     email: "",
-    qq: "1124533793",
-    wechat: "XingHuisama",
+    qq: "",
+    wechat: "",
   },
   counts: {
     photos: 128, // 照片墙数量可以手动写死或动态计算

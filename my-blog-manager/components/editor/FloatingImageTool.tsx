@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
-import { siteConfig } from '../../siteConfig';
 
 interface FloatingImageToolProps {
   isOpen: boolean;
@@ -20,26 +19,16 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 处理文件上传逻辑 (保持不变)
+  // R2 upload via local CMS (credentials in ~/.config/AboutVPS/r2.env)
   const handleFileUpload = async (file: File) => {
-    const picUrl = (siteConfig as any).picBedUrl || "https://pic.dusays.com";
-    const picToken = (siteConfig as any).picBedToken;
-
-    if (!picToken) {
-      showToast("未配置图床 Token！", "error");
-      return;
-    }
-
     setIsUploading(true);
-    showToast("正在将图片传送至云端...", "success");
+    showToast("正在上传到 Cloudflare R2…", "success");
 
     try {
       const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
       const configData = await configRes.json();
       const uploadData = new FormData();
       uploadData.append('file', file);
-      uploadData.append('url', picUrl);
-      uploadData.append('token', picToken);
 
       const res = await fetch(`http://127.0.0.1:${configData.api_port}/api/picbed/upload`, {
         method: 'POST',
@@ -49,7 +38,7 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
       const data = await res.json();
       if (data.success && data.url) {
         setUploadedUrl(data.url);
-        showToast("✅ 上传成功！", "success");
+        showToast("✅ 上传成功（img.thirra.com）", "success");
       } else {
         showToast(`上传失败: ${data.message || '未知错误'}`, "error");
       }

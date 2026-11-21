@@ -119,31 +119,49 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                 <textarea rows={2} value={safeData.bio || ''} onChange={e => handleUpdate('bio', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none resize-none focus:ring-2 focus:ring-indigo-500" />
               </div>
 
-              {/* 社交媒体区域 */}
-              <div className="col-span-1 md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700/50 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 社交 / 连接按钮：统一管理链接或复制内容 */}
+              <div className="col-span-1 md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700/50 space-y-4">
                 <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">邮箱 Email</label>
-                  <input type="text" value={safeSocial.email || ''} onChange={e => handleSocialUpdate('email', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    🔗 社交 / 连接按钮
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    首页名片图标统一读这里。填 URL 的会新开链接；QQ / 微信 / 邮箱填号码或地址，点击时复制到剪贴板。
+                  </p>
                 </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Google 邮箱/链接</label>
-                  <input type="text" value={safeSocial.google || ''} onChange={e => handleSocialUpdate('google', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">微信 ID</label>
-                  <input type="text" value={safeSocial.wechat || ''} onChange={e => handleSocialUpdate('wechat', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">QQ 号码</label>
-                  <input type="text" value={safeSocial.qq || ''} onChange={e => handleSocialUpdate('qq', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">GitHub 地址</label>
-                  <input type="text" value={safeSocial.github || ''} onChange={e => handleSocialUpdate('github', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Gitee 地址</label>
-                  <input type="text" value={safeSocial.gitee || ''} onChange={e => handleSocialUpdate('gitee', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">GitHub（链接）</label>
+                    <input type="text" value={safeSocial.github || ''} onChange={e => handleSocialUpdate('github', e.target.value)} placeholder="https://github.com/…" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Gitee（链接）</label>
+                    <input type="text" value={safeSocial.gitee || ''} onChange={e => handleSocialUpdate('gitee', e.target.value)} placeholder="https://gitee.com/…" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Bilibili（链接）</label>
+                    <input type="text" value={safeSocial.bilibili || ''} onChange={e => handleSocialUpdate('bilibili', e.target.value)} placeholder="https://space.bilibili.com/…" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">网易云（链接）</label>
+                    <input type="text" value={safeSocial.netease || ''} onChange={e => handleSocialUpdate('netease', e.target.value)} placeholder="https://music.163.com/…" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Google（链接或邮箱）</label>
+                    <input type="text" value={safeSocial.google || ''} onChange={e => handleSocialUpdate('google', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">邮箱 Email（复制）</label>
+                    <input type="text" value={safeSocial.email || ''} onChange={e => handleSocialUpdate('email', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">QQ 号码（复制）</label>
+                    <input type="text" value={safeSocial.qq || ''} onChange={e => handleSocialUpdate('qq', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">微信号（复制）</label>
+                    <input type="text" value={safeSocial.wechat || ''} onChange={e => handleSocialUpdate('wechat', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  </div>
                 </div>
               </div>
 

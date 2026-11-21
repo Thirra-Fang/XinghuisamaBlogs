@@ -14,7 +14,6 @@ import SplashScreen from "../components/SplashScreen";
 import { OperationProvider } from "../context/OperationContext";
 import { ToastProvider } from '../components/ToastProvider';
 import CyberCat from '../components/CyberCat';
-import DanmakuBackground from '../components/DanmakuBackground';
 import GlobalSnow from '../components/GlobalSnow';
 
 // 🌟 1. 引入 Next.js 官方脚本组件
@@ -84,7 +83,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                     </div>
                   </div>
 
-                  <DanmakuBackground />
                   <GlobalSnow />
 
                   <div className="relative z-10 flex-1 flex flex-col">

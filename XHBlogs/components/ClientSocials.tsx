@@ -1,14 +1,14 @@
-// src/components/ClientSocials.tsx
 "use client";
 
 import { siteConfig } from '../siteConfig';
+import NetEaseIcon from './icons/NetEaseIcon';
 
 function SocialBtn({ type, url, onClick }: { type: string, url?: string, onClick?: () => void }) {
   const getIcon = () => {
     switch (type) {
       case 'github': return <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.379.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>;
       case 'bilibili': return <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.56c.267.249.391.55.391.902 0 .352-.124.65-.39.902L8.62 6.788h6.76l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L17.68 4.56c.267.249.391.55.391.902 0 .352-.124.65-.39.902l-1.168 1.289zm.854 1.6H5.333c-.893.036-1.64.32-2.24.92-.6.6-.884 1.347-.92 2.24v7.36c.036.894.32 1.641.92 2.241s1.347.884 2.24.92h13.334c.893-.036 1.64-.32 2.24-.92.6-.6.884-1.347.92-2.24v-7.36c-.036-.893-.32-1.64-.92-2.24-.6-.6-1.347-.884-2.24-.92zM8 11.333c.736 0 1.333.597 1.333 1.334v2.666c0 .737-.597 1.334-1.333 1.334-.736 0-1.333-.597-1.333-1.334v-2.666c0-.737.597-1.334 1.333-1.334zm8 0c.736 0 1.333.597 1.333 1.334v2.666c0 .737-.597 1.334-1.333 1.334-.736 0-1.333-.597-1.333-1.334v-2.666c0-.737.597-1.334 1.333-1.334z"/></svg>;
-      case 'netease': return <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm4.162 13.801c-.145 1.422-1.234 2.484-2.567 2.866-.27.077-.547.116-.826.116-1.397 0-2.665-.863-3.174-2.184-.19-.492-.243-1.008-.157-1.513.247-1.447 1.413-2.55 2.845-2.756.168-.024.338-.036.507-.036.198 0 .396.017.59.05l-.047-2.156c-.012-.546-.098-1.072-.255-1.56-.433-1.344-1.586-2.316-2.964-2.5a3.96 3.96 0 0 0-.586-.043c-1.91 0-3.52 1.355-3.91 3.184-.087.407-.131.826-.131 1.245 0 .172.008.344.023.515l1.35-.23a3.45 3.45 0 0 1-.016-.337c0-.292.03-.58.09-.857.273-1.28 1.4-2.23 2.71-2.23.13 0 .26.01.387.03.966.13 1.773.81 2.076 1.752.11.343.17.71.178 1.093l.068 3.098c.018.81.47 1.53 1.17 1.86.233.11.49.168.754.168.172 0 .344-.025.508-.073.49-.14.88-.52.99-1.01.04-.18.055-.366.044-.55l-.015-.25 1.342.08.016.268c.03.52-.01 1.04-.155 1.538z"/></svg>;
+      case 'netease': return <NetEaseIcon className="w-4 h-4" />;
       case 'email': return <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
       case 'qq': return <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-4.418 0-8 3.582-8 8 0 1.25.289 2.433.805 3.49-1.024 1.708-1.53 3.843-1.021 5.308.203.585.806.84 1.341.57.828-.418 1.625-1.025 2.296-1.722 1.335.539 2.862.854 4.579.854 1.716 0 3.243-.315 4.578-.854.671.697 1.468 1.304 2.296 1.722.535.27 1.138.015 1.341-.57.509-1.465.003-3.6-1.021-5.308C19.71 12.433 20 11.25 20 10c0-4.418-3.582-8-8-8zm-2.5 8c-.828 0-1.5-.895-1.5-2s.672-2 1.5-2 1.5.895 1.5 2-.672 2-1.5 2zm5 0c-.828 0-1.5-.895-1.5-2s.672-2 1.5-2 1.5.895 1.5 2-.672 2-1.5 2z"/></svg>;
       case 'wechat': return <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5 13.5c-3.59 0-6.5-2.42-6.5-5.4 0-2.98 2.91-5.4 6.5-5.4s6.5 2.42 6.5 5.4c0 2.98-2.91 5.4-6.5 5.4zm7.5 7.8c-2.76 0-5-2.02-5-4.5 0-2.48 2.24-4.5 5-4.5s5 2.02 5 4.5c0 2.48-2.24 4.5-5 4.5z"/></svg>;
@@ -36,12 +36,12 @@ export default function ClientSocials() {
 
   return (
     <div className="flex gap-2 flex-wrap justify-center mt-4">
-      <SocialBtn type="github" url={siteConfig.social?.github} />
-      <SocialBtn type="bilibili" url={siteConfig.social?.bilibili} />
-      <SocialBtn type="netease" url={siteConfig.social?.netease} />
-      <SocialBtn type="email" onClick={() => copyToClipboard(siteConfig.social?.email || '', '邮箱')} />
-      <SocialBtn type="qq" onClick={() => copyToClipboard(siteConfig.social?.qq || '', 'QQ号')} />
-      <SocialBtn type="wechat" onClick={() => copyToClipboard(siteConfig.social?.wechat || '', '微信号')} />
+      {siteConfig.social?.github && <SocialBtn type="github" url={siteConfig.social.github} />}
+      {siteConfig.social?.bilibili && <SocialBtn type="bilibili" url={siteConfig.social.bilibili} />}
+      {siteConfig.social?.netease && <SocialBtn type="netease" url={siteConfig.social.netease} />}
+      {siteConfig.social?.email && <SocialBtn type="email" onClick={() => copyToClipboard(siteConfig.social.email!, '邮箱')} />}
+      {siteConfig.social?.qq && <SocialBtn type="qq" onClick={() => copyToClipboard(siteConfig.social.qq!, 'QQ号')} />}
+      {siteConfig.social?.wechat && <SocialBtn type="wechat" onClick={() => copyToClipboard(siteConfig.social.wechat!, '微信号')} />}
     </div>
   );
 }

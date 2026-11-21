@@ -18,7 +18,6 @@ import { isStaticExport } from '../lib/staticExport';
 import LatestPostsCarousel from '../components/LatestPostsCarousel';
 import LatestChatterCarousel from '../components/LatestChatterCarousel';
 import LatestAlbumCarousel from '../components/LatestAlbumCarousel';
-import DanmakuBackground from '../components/DanmakuBackground';
 
 function formatUpdateTime(dateString: string) {
   if (!dateString || dateString === '1970-01-01') return '刚刚更新';

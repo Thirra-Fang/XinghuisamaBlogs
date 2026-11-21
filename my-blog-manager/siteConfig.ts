@@ -35,12 +35,14 @@ export const siteConfig = {
   photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   social: {
-    github: "https://github.com/heiehiehi",
-    gitee: "https://github.com/heiehiehi",
-    google: "mailto:bilibiliwuwuwu@gmail.com",
-    email: "1124533793@qq.com",
-    qq: "1124533793",
-    wechat: "XingHuisama",
+    github: "",
+    gitee: "",
+    bilibili: "",
+    netease: "",
+    google: "",
+    email: "",
+    qq: "",
+    wechat: "",
   },
   counts: {
     photos: 128, // 照片墙数量可以手动写死或动态计算
@@ -48,10 +50,10 @@ export const siteConfig = {
   chatterTitle: "云端杂谈", // 你可以改成任何你喜欢的名字
   chatterDescription: "代码、学术、提瓦特与泰拉大陆的碎片记录",
 
-  // 👇 【新增】：图床核心配置 (PicBed Configuration)
-  picBedName: "图床",
-  picBedUrl: "", // 默认的 Lsky Pro API 地址
-  picBedToken: "", // 留空，等你能在后台填入并覆写
+  // 图床已改用本机 ~/.config/AboutVPS/r2.env（Cloudflare R2）；勿把密钥写进本文件
+  picBedName: "Cloudflare R2",
+  picBedUrl: "",
+  picBedToken: "",
 
   // 👇 【新增】：全局背景弹幕配置
   danmakuList: ["在干嘛呢？", "有笨蛋嘛？", "前方高能反应！", "GROMACS 跑起来了吗？", "MD 模拟什么时候才能出图啊", "Graph Neural Networks 炼丹中...", "BUG 修复进度 99%", "今天背单词了吗？", "Tailwind CSS 拯救前端", "写算法中", "睡大觉中", "到底在干嘛？"],

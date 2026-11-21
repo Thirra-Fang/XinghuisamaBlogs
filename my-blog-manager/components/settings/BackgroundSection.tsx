@@ -100,32 +100,22 @@ export default function BackgroundSection({ formData, handleUpdate, pushToQueue 
     showToast("✅ 成功添加壁纸！", "success");
   };
 
-  // 【核心功能】：真实的图床上传逻辑
+  // Cloudflare R2 via local CMS (~/.config/AboutVPS/r2.env)
   const handleFileUpload = async (file: File) => {
-    const picUrl = formData.picBedUrl || "https://pic.dusays.com";
-    const picToken = formData.picBedToken;
-
-    if (!picToken) {
-      showToast("⛔ 无法上传！请先在【图库配置管理】中填写图床 Token", "error");
-      return;
-    }
     if (!file.type.startsWith('image/')) {
       showToast("只能上传图片文件哦！", "warning");
       return;
     }
 
     setIsUploading(true);
-    showToast("正在将图片传送至图床引擎...", "info");
+    showToast("正在上传到 Cloudflare R2…", "info");
 
     try {
       const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
       const configData = await configRes.json();
 
-      // 构建 multipart/form-data
       const uploadData = new FormData();
       uploadData.append('file', file);
-      uploadData.append('url', picUrl);
-      uploadData.append('token', picToken);
 
       const res = await fetch(`http://127.0.0.1:${configData.api_port}/api/picbed/upload`, {
         method: 'POST',

@@ -14,7 +14,6 @@ import SplashScreen from "../components/SplashScreen";
 import CyberCat from '../components/CyberCat';
 import BigFishPet from '../components/BigFishPet';
 import petSelection from '../data/petSelection.json';
-import DanmakuBackground from '../components/DanmakuBackground';
 import { isStaticExport } from '../lib/staticExport';
 
 import MobileBackButton from '../components/MobileBackButton';
@@ -57,13 +56,9 @@ function AppShell({ children }: { children: React.ReactNode }) {
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/40 dark:bg-indigo-900/20 blur-[100px] rounded-full z-[-7] md:mix-blend-overlay"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-400/30 dark:bg-purple-900/30 blur-[100px] rounded-full z-[-7] md:mix-blend-overlay"></div>
 
-        <div className="hidden md:block absolute inset-0 w-full h-full">
+        <div className="hidden md:block absolute inset-0 w-full h-full contain-[layout_paint] isolation-isolate">
           <BackgroundEffects />
         </div>
-      </div>
-
-      <div className="hidden md:block">
-        <DanmakuBackground />
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col">
