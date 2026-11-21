@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import RichTextEditor, { RichTextEditorHandle } from '../../components/editor/RichTextEditor';
 import MetaMatrix from '../../components/editor/MetaMatrix';
 import FloatingImageTool from '../../components/editor/FloatingImageTool';
+import { fetchBlogPath } from '../../lib/safeStorage';
 
 export default function EditorClient({ historyPostTags, historyChatterTags, historyMoods }: any) {
   const searchParams = useSearchParams();
@@ -34,12 +35,14 @@ export default function EditorClient({ historyPostTags, historyChatterTags, hist
     if (docId !== 'new') {
       const loadDraft = async () => {
         try {
+          const blog_path = await fetchBlogPath();
+          if (!blog_path) return;
           const configRes = await fetch('/backend_config.json');
           const config = await configRes.json();
           const res = await fetch(`http://127.0.0.1:${config.api_port}/api/drafts/get`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ blog_path: "F:/Projects/my-blog", id: docId })
+            body: JSON.stringify({ blog_path, id: docId })
           });
           const data = await res.json();
           if (data.success) {
@@ -58,9 +61,14 @@ export default function EditorClient({ historyPostTags, historyChatterTags, hist
   }, [docId, docType]);
 
   const handleSave = async (isPublish: boolean) => {
+    const blog_path = await fetchBlogPath();
+    if (!blog_path) {
+      alert("未配置博客路径，请到设置 → 项目仓库填写本机 XHBlogs 路径");
+      return;
+    }
     setIsSaving(true);
     const payload = {
-      blog_path: "F:/Projects/my-blog",
+      blog_path,
       id: docType === 'about' ? 'about' : (docId === 'new' ? null : docId),
       type: docType,
       title: docType === 'about' ? '关于我' : title,

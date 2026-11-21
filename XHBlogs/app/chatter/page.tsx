@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Navbar from '../../components/Navbar';
-import PageTransition from '../../components/PageTransition';
 import ChatterBoard from './ChatterBoard';
 import { siteConfig } from '@/siteConfig';
 
@@ -47,10 +46,8 @@ export default function ChatterPage() {
   return (
     <div className="min-h-screen relative pb-10">
       <Navbar />
-      <PageTransition>
-        {/* 将解析好的数据传递给客户端组件进行瀑布流渲染 */}
-        <ChatterBoard chatters={chatters} />
-      </PageTransition>
+      {/* 不包 PageTransition：opacity/transform 祖先会让卡片在 WebKit 下卡透明 */}
+      <ChatterBoard chatters={chatters} />
     </div>
   );
 }

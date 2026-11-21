@@ -11,14 +11,27 @@ export type Project = {
 
 export const projectsData: Project[] = [
   {
-    "id": "proj_1775049332705",
-    "name": "Computational Chemistry Tool",
-    "githubUrl": "https://github.com/heiehiehi/Computational_Chemistry_Tool",
-    "description": "该工具本作者使用在Win下的WSL2平台，系统为Ubuntu22，个人使用请依据自己数据进行修改（这些工具只是整合了一些流程）",
+    "id": "proj_1795285743857",
+    "name": "modelica-preview",
+    "githubUrl": "https://github.com/Thirra-Fang/modelica-preview",
+    "description": "在 Visual Studio Code 中打开 Modelica（.mo） 文件时，根据源码里的 annotation（如 Placement、connect 的 Line、类级别的 Diagram / Icon 等）渲染示意图预览，便于对照图形与文本。",
     "icon": "🚀",
     "tags": [
-      "Gromacs",
-      "RMSF"
+      "TypeScript",
+      "HTML",
+      "JavaScript"
     ]
   },
+  {
+    "id": "proj_1795285394879",
+    "name": "XinghuisamaBlogs",
+    "githubUrl": "https://github.com/Thirra-Fang/XinghuisamaBlogs",
+    "description": "原作者：XingHuiSama\n这是一个采用 Next.js 构建的高颜值、毛玻璃（Glassmorphism）风格个人博客系统",
+    "icon": "🚀",
+    "tags": [
+      "TypeScript",
+      "Python",
+      "JavaScript"
+    ]
+  }
 ];

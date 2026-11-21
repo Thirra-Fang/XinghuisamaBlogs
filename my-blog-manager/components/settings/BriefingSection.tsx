@@ -6,6 +6,7 @@ import BriefingContentManager from './BriefingContentManager';
 import BriefingAgentPanel from './BriefingAgentPanel';
 import type { BriefingIssue } from './briefingApi';
 import { ArrowUpRight, BookOpen, Check, CircleHelp, Eye, Layers3, Loader2, Plus, RefreshCw, Save, Settings2, Sparkles, Workflow, X } from 'lucide-react';
+import { storageGet, storageSet } from '../../lib/safeStorage';
 
 type Config = {
   version: number; revision: number;
@@ -68,12 +69,11 @@ export default function BriefingSection() {
   }
   useEffect(() => { void load(); }, []); // The console reads the local snapshot once on opening.
   useEffect(() => {
-    try { setGuideOpen(localStorage.getItem(guideStorageKey) !== 'understood'); }
-    catch { setGuideOpen(true); }
+    setGuideOpen(storageGet(guideStorageKey) !== 'understood');
   }, []);
   function dismissGuide(remember: boolean) {
     if (remember) {
-      try { localStorage.setItem(guideStorageKey, 'understood'); } catch { /* The guide remains available without browser storage. */ }
+      storageSet(guideStorageKey, 'understood');
     }
     setGuideOpen(false);
   }

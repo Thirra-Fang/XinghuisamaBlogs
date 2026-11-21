@@ -41,13 +41,12 @@ function getLocalItems(directoryName: string, typeName: string) {
 export default function CreativeWorkshopPage() {
   const posts = getLocalItems('posts', 'post');
   const chatters = getLocalItems('chatters', 'chatter');
-  const moments = getLocalItems('moments', 'moment');
 
   return (
     <CreativeWorkshopClient
       posts={posts}
       chatters={chatters}
-      moments={moments}
+      moments={[]}
     />
   );
 }

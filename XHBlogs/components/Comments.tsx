@@ -11,38 +11,41 @@ import { siteConfig } from '../siteConfig'; // 如果路径报错，请检查层
 export default function Comments() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const cfg = siteConfig.gitalkConfig;
+  const enabled = Boolean(cfg?.clientID && cfg?.clientSecret && cfg?.repo && cfg?.owner);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!enabled || !containerRef.current) return;
 
-    // 清空之前的评论区（防止 Next.js 路由切换时重复渲染）
     containerRef.current.innerHTML = '';
 
-    const gitalk = new Gitalk({
-      clientID: siteConfig.gitalkConfig.clientID,
-      clientSecret: siteConfig.gitalkConfig.clientSecret,
-      repo: siteConfig.gitalkConfig.repo,
-      owner: siteConfig.gitalkConfig.owner,
-      admin: siteConfig.gitalkConfig.admin,
-
-      // 👇 指向我们自己的同源 API，彻底告别跨域和第三方拦截！
-      proxy: '/api/github',
-
-      id: (pathname.replace(/\/$/, '') || '/').substring(0, 49),
-      distractionFreeMode: false,
-    });
-
-    gitalk.render(containerRef.current);
-
-    // 👇 🌟 核心修复：擦除 URL 中的 OAuth 凭证，防止注销后二次登录失败
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('code')) {
-      url.searchParams.delete('code');
-      // 使用 replaceState 无痕修改地址栏，页面不会刷新，也不会留下历史记录
-      window.history.replaceState({}, document.title, url.toString());
+    try {
+      const gitalk = new Gitalk({
+        clientID: cfg.clientID,
+        clientSecret: cfg.clientSecret,
+        repo: cfg.repo,
+        owner: cfg.owner,
+        admin: cfg.admin,
+        proxy: '/api/github',
+        id: (pathname.replace(/\/$/, '') || '/').substring(0, 49),
+        distractionFreeMode: false,
+      });
+      gitalk.render(containerRef.current);
+    } catch (e) {
+      console.warn('Gitalk render skipped:', e);
     }
 
-  }, [pathname]);
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('code')) {
+        url.searchParams.delete('code');
+        window.history.replaceState({}, document.title, url.toString());
+      }
+    } catch {}
+
+  }, [pathname, enabled, cfg]);
+
+  if (!enabled) return null;
 
   return (
     <div className="w-full mt-16 relative">

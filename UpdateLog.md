@@ -1,6 +1,9 @@
 ## Unreleased
 
-- 支持 Debian 自托管：`XHBlogs` 启用 Next.js `standalone`，新增 `deploy/` 构建与 rsync 脚本、systemd/nginx 模板与技术文档；根 README 增加自托管入口。推荐在 CachyOS 等 Linux 机构建，服务器只运行 Node + nginx（443/80 → `127.0.0.1:3000`）。
+- **静态 fork（AboutVPS）**：公网以 `STATIC_EXPORT=1` 导出到 Reality 回落目录；运维见 `AboutVPS/04-静态展示站.md`。根 README 增加 fork 说明。
+- **说说退役**：删除 `moments/` 数据、`app/moments`、About 动态聚合、CMS `/api/moments` 与 sync 目录；编辑器与展示站均不可再访问。
+- **杂谈展示**：列表改为 CSS grid、卡片去 `backdrop-blur`；`/chatter` 去掉 PageTransition；去掉全局 `backdrop-blur` 永久 `will-change`，修复编辑器 WebKit 下悬停才显示。
+- 支持 Debian 自托管：`XHBlogs` 启用 Next.js `standalone`，新增 `deploy/` 构建与 rsync 脚本、systemd/nginx 模板与技术文档；根 README 增加自托管入口。推荐在 CachyOS 等 Linux 机构建，服务器只运行 Node + nginx（443/80 → `127.0.0.1:3000`）。**注意**：`deploy/` 为 Node standalone **备选**路径；当前 thirra.com 生产以 AboutVPS 静态回落为准。
 
 ## 0.4.5 - 2026-11-11
 

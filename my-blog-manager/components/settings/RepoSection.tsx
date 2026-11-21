@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
+import { storageSet } from '../../lib/safeStorage';
 import { ShieldCheck, GitBranch, Save, Rocket, Wand2, Key, Copy, ExternalLink, Check, CloudUpload, Code } from 'lucide-react';
 
 export default function RepoSection() {
@@ -50,7 +51,7 @@ export default function RepoSection() {
             sourceRepoUrl: data.sourceRepoUrl || "",
             sourceBranch: data.sourceBranch || "main"
           });
-          if (data.blogPath) localStorage.setItem('targetBlogPath', data.blogPath);
+          if (data.blogPath) storageSet('targetBlogPath', data.blogPath);
         }
       } catch (e) { console.error("加载配置失败"); }
     };
@@ -205,7 +206,7 @@ export default function RepoSection() {
                  {isCheckingPath ? "探测中..." : "测试路径 ⚡"}
                </button>
             </div>
-            <input type="text" value={deployData.blogPath} onChange={e => setDeployData({...deployData, blogPath: e.target.value})} className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500" placeholder="F:/Projects/my-blog" />
+            <input type="text" value={deployData.blogPath} onChange={e => setDeployData({...deployData, blogPath: e.target.value})} className="w-full bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500" placeholder="/home/…/XinghuisamaBlogs/XHBlogs" />
           </div>
 
           <div className="bg-slate-50 dark:bg-slate-800/30 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/50">

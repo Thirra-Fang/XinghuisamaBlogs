@@ -280,9 +280,11 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
                 />
               </div>
 
-              <div className="mt-10 md:mt-12">
-                <Comments />
-              </div>
+              {!isStaticExport && (
+                <div className="mt-10 md:mt-12">
+                  <Comments />
+                </div>
+              )}
 
             </div>
           </article>

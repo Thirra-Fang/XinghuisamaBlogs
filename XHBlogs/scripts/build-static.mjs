@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Build pure static site into out/ for nginx (AboutVPS reality-fallback).
- * Temporarily parks app/api, app/music, app/tree, app/moments so next export succeeds.
+ * Temporarily parks app/api, app/music, app/tree so next export succeeds.
+ * (说说 /moments 已从源码移除，无需再 park。)
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -15,7 +16,6 @@ const parks = [
   { src: path.join(root, 'app', 'api'), dest: path.join(parkRoot, 'api') },
   { src: path.join(root, 'app', 'music'), dest: path.join(parkRoot, 'music') },
   { src: path.join(root, 'app', 'tree'), dest: path.join(parkRoot, 'tree') },
-  { src: path.join(root, 'app', 'moments'), dest: path.join(parkRoot, 'moments') },
 ];
 
 function park(src, dest) {
@@ -49,7 +49,7 @@ try {
     parked[i] = park(p.src, p.dest);
   });
   console.log(
-    `[build-static] parked api=${parked[0]} music=${parked[1]} tree=${parked[2]} moments=${parked[3]}`
+    `[build-static] parked api=${parked[0]} music=${parked[1]} tree=${parked[2]}`
   );
 
   const env = {

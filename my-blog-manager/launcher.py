@@ -144,6 +144,8 @@ def main():
 
     time.sleep(1.5)
 
+    os.environ.setdefault("PYWEBVIEW_GUI", "gtk")
+
     api = WindowAPI()
     window = webview.create_window(
         title='星辉云端·控制台',

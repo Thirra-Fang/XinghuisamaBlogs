@@ -1,5 +1,9 @@
 # XHBlogs 自托管部署（Debian + CachyOS 构建）
 
+> **备选路径**：本文是 Next.js **Node standalone** 自托管说明。  
+> 当前 **thirra.com / Reality 回落** 生产部署走的是纯静态导出，见旁路 **[AboutVPS/04-静态展示站.md](../../../AboutVPS/04-静态展示站.md)**（`build:static` + `deploy-fallback-site-remote.sh`）。  
+> 本 fork 已**退役说说（moments）**；若仍用本脚本部署 standalone，产物中不再包含 `moments/`。
+
 面向小内存 Debian 服务器：在 **CachyOS（或其它 x86_64 Linux）** 上构建 Next.js **standalone** 产物，用 **rsync** 同步到服务器，由 **systemd + nginx** 对外提供 **HTTPS（443）**。服务器上 **不要** 执行 `npm run build`。
 
 本地写作控制台 `my-blog-manager` 仍在 Windows（或其它写作机）使用，**不部署到公网服务器**。
@@ -67,7 +71,7 @@ chmod +x deploy/build-release.sh deploy/rsync-deploy.sh
 - `server.js` 与 standalone 运行时
 - `.next/static/`
 - `public/`
-- `posts/`、`moments/`、`chatters/`、`data/`
+- `posts/`、`chatters/`、`data/`
 - `app/about/about.md`
 
 可选：`SKIP_INSTALL=1` 跳过 `npm ci`（依赖已装好时）。
@@ -171,7 +175,7 @@ Gitalk OAuth 的 Homepage / Authorization callback 改为 `https://你的域名`
 
 ## 10. 验收清单
 
-- [ ] 首页、文章、说说、杂谈、关于页
+- [ ] 首页、文章、杂谈、关于页（无说说）
 - [ ] `/api/music`；配置密钥后 `/api/weather`、`/api/chat`
 - [ ] HTTPS 与评论 OAuth（若启用）
 - [ ] `reboot` 后 `xhblogs` 与 `nginx` 自启

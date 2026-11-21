@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../siteConfig';
+import { storageGet, storageSet } from '../lib/safeStorage';
 
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
@@ -10,7 +11,13 @@ export default function SplashScreen() {
 
   useEffect(() => {
     setIsMounted(true);
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
+    // Prefer sessionStorage via polyfill; fall back to safeStorage key space
+    let hasSeenSplash = false;
+    try {
+      hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
+    } catch {
+      hasSeenSplash = storageGet('hasSeenSplash') === 'true';
+    }
 
     if (!hasSeenSplash) {
       setShow(true);
@@ -19,16 +26,18 @@ export default function SplashScreen() {
       }, 2200);
       return () => clearTimeout(timer);
     } else {
-      // 容错处理：确保直接访问时类名存在
       document.documentElement.classList.add('splash-seen');
     }
   }, []);
 
   const exitSplash = () => {
     setShow(false);
-    sessionStorage.setItem('hasSeenSplash', 'true');
+    try {
+      sessionStorage.setItem('hasSeenSplash', 'true');
+    } catch {
+      storageSet('hasSeenSplash', 'true');
+    }
 
-    // 【核心解封】：动画快结束时，给 html 加上类名，CSS 会自动把内容显示出来
     setTimeout(() => {
       document.documentElement.classList.add('splash-seen');
     }, 500);

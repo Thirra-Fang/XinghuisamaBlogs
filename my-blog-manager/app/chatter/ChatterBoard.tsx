@@ -136,12 +136,9 @@ export default function ChatterBoard({ chatters: initialChatters }: { chatters: 
       --------------------------------------------------------- */}
 
       <div className="mb-14 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter"
-        >
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter">
           {siteConfig.chatterTitle || "源石研究笔记"}
-        </motion.h1>
+        </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium italic opacity-80 flex items-center justify-center gap-2">
           <Sparkles size={14} className="text-indigo-500" />
           “ {siteConfig.chatterDescription || "日常碎片与灵感记录"} ”
@@ -173,10 +170,11 @@ export default function ChatterBoard({ chatters: initialChatters }: { chatters: 
         </div>
       </div>
 
-      <motion.div layout className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+      {/* 网格布局：避免 CSS columns + backdrop-blur 在 WebKit 下卡透明 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {/* 新增项 */}
-        <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="break-inside-avoid">
+        <div>
           <Link href="/editor?type=chatter"
             className="group flex flex-col items-center justify-center min-h-[250px] rounded-[32px] border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/10 dark:bg-slate-800/10 hover:bg-white/30 dark:hover:bg-indigo-500/5 hover:border-indigo-500 transition-all duration-500"
           >
@@ -185,79 +183,73 @@ export default function ChatterBoard({ chatters: initialChatters }: { chatters: 
             </div>
             <span className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-indigo-500 transition-colors">记录新的灵感...</span>
           </Link>
-        </motion.div>
+        </div>
 
-        <AnimatePresence mode='popLayout'>
-          {filteredChatters.map((chatter) => (
-            <motion.div
-              layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-              key={chatter.slug} className="break-inside-avoid group relative"
-            >
-              {/* 悬浮管理按钮组 */}
-              <div className="absolute top-5 left-5 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
-                <Link
-                  href={`/editor?id=${chatter.slug}&type=chatter`}
-                  className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-colors"
-                >
-                  <Pencil size={14} />
-                </Link>
-                <button
-                  // 👇 核心修改：点击不再直接 delete，而是打开自定义弹窗
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setDeleteModal({ isOpen: true, slug: chatter.slug, title: chatter.title || "无标题笔记" });
-                  }}
-                  className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-
-              <Link href={`/chatter/${chatter.slug}`}
-                className="block rounded-[32px] bg-white/40 dark:bg-slate-800/40 backdrop-blur-2xl border border-white/50 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden"
+        {filteredChatters.map((chatter) => (
+          <div key={chatter.slug} className="group relative">
+            {/* 悬浮管理按钮组 */}
+            <div className="absolute top-5 left-5 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
+              <Link
+                href={`/editor?id=${chatter.slug}&type=chatter`}
+                className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-colors"
               >
-                {chatter.cover && (
-                  <div className="w-full h-52 overflow-hidden relative">
-                    <img src={chatter.cover} alt="cover" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                <Pencil size={14} />
+              </Link>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setDeleteModal({ isOpen: true, slug: chatter.slug, title: chatter.title || "无标题笔记" });
+                }}
+                className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+
+            <Link href={`/chatter/${chatter.slug}`}
+              className="block rounded-[32px] bg-white/90 dark:bg-slate-800/90 border border-white/50 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-500"
+            >
+              {chatter.cover && (
+                <div className="w-full h-52 overflow-hidden relative rounded-t-[32px]">
+                  <img src={chatter.cover} alt="cover" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                </div>
+              )}
+
+              <div className="p-7">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em] bg-indigo-500/5 dark:bg-indigo-400/10 px-3 py-1 rounded-lg border border-indigo-500/10">
+                    {chatter.date}
                   </div>
-                )}
-
-                <div className="p-7">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em] bg-indigo-500/5 dark:bg-indigo-400/10 px-3 py-1 rounded-lg border border-indigo-500/10">
-                      {chatter.date}
-                    </div>
-                    {chatter.mood && (
-                      <div className="text-[10px] font-black text-pink-600 dark:text-pink-400 bg-pink-500/5 dark:bg-pink-400/10 px-3 py-1 rounded-lg border border-pink-500/10">
-                        {chatter.mood}
-                      </div>
-                    )}
-                  </div>
-
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                    {chatter.title || "碎片笔记"}
-                  </h3>
-
-                  <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-5 opacity-90 font-medium italic">
-                    {chatter.content}
-                  </div>
-
-                  {chatter.tags && chatter.tags.length > 0 && (
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {chatter.tags.map(t => (
-                        <span key={t} className="text-[9px] font-black text-slate-500 dark:text-slate-400 bg-slate-500/5 dark:bg-white/5 px-2.5 py-1 rounded-md border border-slate-500/10 dark:border-white/5">
-                          #{t}
-                        </span>
-                      ))}
+                  {chatter.mood && (
+                    <div className="text-[10px] font-black text-pink-600 dark:text-pink-400 bg-pink-500/5 dark:bg-pink-400/10 px-3 py-1 rounded-lg border border-pink-500/10">
+                      {chatter.mood}
                     </div>
                   )}
                 </div>
-              </Link>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  {chatter.title || "碎片笔记"}
+                </h3>
+
+                <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-5 opacity-90 font-medium italic">
+                  {chatter.content}
+                </div>
+
+                {chatter.tags && chatter.tags.length > 0 && (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {chatter.tags.map(t => (
+                      <span key={t} className="text-[9px] font-black text-slate-500 dark:text-slate-400 bg-slate-500/5 dark:bg-white/5 px-2.5 py-1 rounded-md border border-slate-500/10 dark:border-white/5">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -7,12 +7,10 @@ import Navbar from '../components/Navbar';
 import PageTransition from '../components/PageTransition';
 import SearchBar from '../components/SearchBar';
 import { siteConfig } from '../siteConfig';
-import CloudPlayer from '../components/CloudPlayer';
 import ThemeToggleBlock from '../components/ThemeToggleBlock';
 import ProfileCard from '../components/ProfileCard';
 import SiteDashboard from '../components/SiteDashboard';
 import { albums } from '../data/albums';
-import LyricBar from '../components/LyricBar';
 import { ToastProvider } from '../components/ToastProvider';
 
 import LatestPostsCarousel from '../components/LatestPostsCarousel';
@@ -92,24 +90,16 @@ export default function Home() {
       <div className="min-h-screen relative pb-10">
         <Navbar />
         <PageTransition>
-          <div className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+          <div className="w-full max-w-6xl mx-auto mt-24 sm:mt-28 px-4 sm:px-6 lg:px-10 relative z-10">
             <SearchBar posts={allPosts} />
 
-            <main className="flex flex-col gap-6 w-full">
-              {/* 第一行：个人信息 + 播放器 */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-stretch">
-                <div className="md:col-span-7 flex">
+            <main className="flex flex-col gap-6 w-full mt-6">
+              {/* 第一行：个人信息（静态站无播放器） */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+                <div className="col-span-1 lg:col-span-12 flex flex-col">
                     <ProfileCard postCount={allPosts.length} chatterCount={chatterCount} photoCount={realPhotoCount}/>
                 </div>
-
-                {/* 🌟 核心修改：去掉乱七八糟的 Link 和层级，直接渲染 CloudPlayer */}
-                <div className="md:col-span-5 flex">
-                    <CloudPlayer/>
-                </div>
               </div>
-
-              {/* 歌词栏 */}
-              <div className="w-full mt-[-10px]"><LyricBar/></div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-stretch">
                 <div className="md:col-span-4 h-full">
@@ -136,7 +126,7 @@ export default function Home() {
               </div>
 
               {/* 底部数据面板 */}
-              <div className="w-full mt-2"><SiteDashboard/></div>
+              <div className="w-full mt-4"><SiteDashboard/></div>
             </main>
           </div>
         </PageTransition>

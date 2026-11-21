@@ -9,10 +9,6 @@ import { useOperations } from '../../context/OperationContext';
 import { useToast } from '../../components/ToastProvider';
 import FloatingImageTool from '../../components/editor/FloatingImageTool';
 
-// 🌟 新增：引入配置和评论组件
-import Comments from '../../components/Comments';
-import { siteConfig } from '../../siteConfig';
-
 const containerVariants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -32,16 +28,6 @@ export default function FriendsBoard() {
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; name: string | null }>({ isOpen: false, id: null, name: null });
   const [friendModal, setFriendModal] = useState<{ isOpen: boolean; mode: 'add' | 'edit'; data: Partial<Friend> }>({ isOpen: false, mode: 'add', data: {} });
   const [isImgToolOpen, setIsImgToolOpen] = useState(false);
-
-  // 🌟 新增：控制复制按钮的状态和读取配置模板
-  const [isCopied, setIsCopied] = useState(false);
-  const applyFormat = siteConfig.friendLinkApplyFormat;
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(applyFormat);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
-  };
 
   const syncToQueue = (nextList: Friend[]) => {
     addOperation({
@@ -189,73 +175,6 @@ export default function FriendsBoard() {
             </a>
           </motion.div>
         ))}
-      </motion.div>
-
-      {/* 🌟 新增：申请友链引导区 (与前端组件一致的移动端适配) */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="mt-14 md:mt-20 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl p-5 md:p-8 max-w-3xl mx-auto text-center shadow-lg md:shadow-xl relative"
-      >
-        <h2 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-wider">
-          ✨ 建立神经连接
-        </h2>
-        <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-serif mb-4 md:mb-6">
-          欢迎各位大佬交换友链！请一键复制下方格式，并在底部的 Gitalk 留言板申请：
-        </p>
-
-        <div className="relative bg-slate-100/60 dark:bg-slate-900/60 rounded-xl md:rounded-2xl p-4 md:p-5 text-left inline-block w-full max-w-md border border-slate-200/50 dark:border-slate-700/50 group overflow-hidden">
-          <pre className="font-mono text-[10px] md:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-all pr-8 md:pr-10">
-            {applyFormat}
-          </pre>
-
-          <button
-            onClick={handleCopy}
-            className="absolute top-2 right-2 md:top-3 md:right-3 p-1.5 md:p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500 transition-all duration-300 shadow-sm backdrop-blur-sm"
-            title="一键复制"
-          >
-            {isCopied ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 hover:text-white">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        <div className="mt-6 md:mt-8">
-          <a
-            href="#gitalk-container"
-            className="inline-block px-6 py-2.5 md:px-8 md:py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-full text-sm md:text-base font-bold tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30"
-          >
-            前往留言区申请 👇
-          </a>
-        </div>
-      </motion.div>
-
-      {/* 🌟 新增：Gitalk 评论区 */}
-      <motion.div
-        id="gitalk-container"
-        className="mt-12 md:mt-16 scroll-mt-24 px-2 md:px-0"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="flex items-center justify-center gap-2 md:gap-3 mb-4 md:mb-6">
-          <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>
-          <h3 className="text-sm md:text-xl font-bold text-slate-800 dark:text-gray-200 tracking-widest uppercase">
-            终端留言板
-          </h3>
-          <span className="w-8 md:w-12 h-[1px] bg-slate-300 dark:bg-slate-700"></span>
-        </div>
-
-        <Comments />
       </motion.div>
 
     </div>

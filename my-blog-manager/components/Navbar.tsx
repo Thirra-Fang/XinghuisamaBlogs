@@ -8,6 +8,7 @@ import { useOperations } from '../context/OperationContext';
 import { useToast } from './ToastProvider';
 import { AlertTriangle } from 'lucide-react';
 import { siteConfig } from '../siteConfig';
+import { fetchBlogPath, storageGet } from '../lib/safeStorage';
 
 export default function Navbar({ previewOnly = false, compact = false }: { previewOnly?: boolean; compact?: boolean }) {
   const [showNav, setShowNav] = useState(true);
@@ -23,24 +24,11 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
   useEffect(() => {
     if (previewOnly) return;
-    const fetchPath = async () => {
-      try {
-        const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-        const config = await configRes.json();
-        const res = await fetch(`http://127.0.0.1:${config.api_port}/api/deploy/config`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.blogPath) {
-            setTargetBlogPath(data.blogPath);
-            localStorage.setItem('targetBlogPath', data.blogPath);
-          }
-        }
-      } catch (e) {
-        const path = localStorage.getItem('targetBlogPath') || "F:/Projects/my-blog";
-        setTargetBlogPath(path);
-      }
+    const loadPath = async () => {
+      const path = await fetchBlogPath();
+      setTargetBlogPath(path);
     };
-    fetchPath();
+    loadPath();
   }, [previewOnly]);
 
   useEffect(() => {
@@ -54,16 +42,13 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  // 🌟 这里新增了 /tree 路由
+  // Aligned with static site: no music / moments / tree
   const navLinks = [
     { name: '首页', href: '/' },
     { name: '项目', href: '/projects' },
     { name: '归档', href: '/timeline' },
     { name: '照片墙', href: '/photowall' },
-    { name: '音乐', href: '/music' },
-    { name: '说说', href: '/moments' },
     { name: '杂谈', href: '/chatter' },
-    { name: '🌳 灵境', href: '/tree' }, // <--- 新增的入口在这里喵！
     { name: '📝 草稿箱', href: '/drafts' },
     { name: '友链', href: '/friends' },
     { name: '关于', href: '/about' },
@@ -121,10 +106,6 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
               apiUrl = `${apiBase}/api/config/update`;
               body = { updates: op.payload };
               break;
-            case 'create_moment':
-              apiUrl = `${apiBase}/api/moments/save`;
-              body = op.payload;
-              break;
             default:
               apiUrl = `${apiBase}/api/drafts/sync_local`;
               body = { operations: [op] };
@@ -161,7 +142,7 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
   const handleSyncBlogClick = () => {
     if (!targetBlogPath) {
-       const fallback = localStorage.getItem('targetBlogPath') || "F:/Projects/my-blog";
+       const fallback = storageGet('targetBlogPath') || "";
        setTargetBlogPath(fallback);
     }
     setIsOpBoxOpen(false);

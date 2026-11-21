@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Navbar from '../../components/Navbar';
-import PageTransition from '../../components/PageTransition';
 import ChatterBoard from './ChatterBoard';
 
 export const metadata = {
@@ -43,9 +42,8 @@ export default function ChatterPage() {
   return (
     <div className="min-h-screen relative pb-10">
       <Navbar />
-      <PageTransition>
-        <ChatterBoard chatters={chatters} />
-      </PageTransition>
+      {/* 不包 PageTransition：opacity/transform 祖先会让卡片在 WebKit 下卡透明 */}
+      <ChatterBoard chatters={chatters} />
     </div>
   );
 }

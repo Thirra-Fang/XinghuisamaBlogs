@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from 'react';
+import { storageGet, storageSet } from '../lib/safeStorage';
 
 const ThemeContext = createContext({ isDark: true, toggleTheme: () => {} });
 
@@ -13,7 +14,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
 
     // 从 localStorage 读取真实状态
-    const savedTheme = localStorage.getItem('blog-theme');
+    const savedTheme = storageGet('blog-theme');
     // 如果没有记录，默认给深色模式（流萤飞舞）
     const isDarkMode = savedTheme !== 'light';
     setIsDark(isDarkMode);
@@ -40,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const newDark = !isDark;
     setIsDark(newDark);
-    localStorage.setItem('blog-theme', newDark ? 'dark' : 'light');
+    storageSet('blog-theme', newDark ? 'dark' : 'light');
   };
 
   // 在客户端挂载完成前，为了防止闪屏，先隐藏内容

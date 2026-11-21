@@ -7,12 +7,14 @@ import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import { ToastProvider, useToast } from '../../components/ToastProvider';
 import { AlertTriangle, Search, Trash2, X, Sparkles, Pencil } from 'lucide-react';
+import { fetchBlogPath } from '../../lib/safeStorage';
 
 function DraftsContent() {
   const { showToast } = useToast();
   const [drafts, setDrafts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [blogPath, setBlogPath] = useState("");
 
   // 👇 自定义弹窗状态管理
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; title: string | null }>({
@@ -21,18 +23,23 @@ function DraftsContent() {
     title: null
   });
 
-  const blogPath = "F:/Projects/my-blog";
-
   const fetchDrafts = async () => {
     setIsLoading(true);
     try {
+      const path = blogPath || (await fetchBlogPath());
+      if (path && path !== blogPath) setBlogPath(path);
+      if (!path) {
+        setDrafts([]);
+        showToast("未配置博客路径，请到设置 → 项目仓库填写", "warning");
+        return;
+      }
       const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
       const configData = await configRes.json();
 
       const res = await fetch(`http://127.0.0.1:${configData.api_port}/api/drafts/list`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blog_path: blogPath })
+        body: JSON.stringify({ blog_path: path })
       });
 
       const data = await res.json();
@@ -58,13 +65,18 @@ function DraftsContent() {
     const id = deleteModal.id;
 
     try {
+      const path = blogPath || (await fetchBlogPath());
+      if (!path) {
+        showToast("未配置博客路径", "warning");
+        return;
+      }
       const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
       const configData = await configRes.json();
 
       const res = await fetch(`http://127.0.0.1:${configData.api_port}/api/drafts/delete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blog_path: blogPath, id: id })
+        body: JSON.stringify({ blog_path: path, id: id })
       });
 
       const data = await res.json();

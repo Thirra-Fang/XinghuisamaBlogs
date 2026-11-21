@@ -13,6 +13,22 @@
 本仓库（若为 fork / 二次配置）在保留上述署名与许可的前提下使用；请勿删除 LICENSE 与对上游贡献者的致谢。  
 涉密配置（Cloudflare R2、Gitalk Secret 等）请放本机目录（例如 `~/.config/AboutVPS/r2.env`），**不要**提交到 git。
 
+### 本 fork / 静态公网部署（AboutVPS）
+
+`thirra.com` 线上走的是 **纯静态导出**（`STATIC_EXPORT=1` → `/var/www/reality-fallback`），**不是**下文的 Vercel 双轨或 `XHBlogs/deploy` Node standalone。运维与图床说明见旁路仓库 **[AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md)**。
+
+相对上游的主要差异：
+
+| 项 | 本 fork |
+|----|---------|
+| 公网形态 | `npm run build:static` + `deploy-fallback-site-remote.sh` |
+| 说说 | **已退役**（目录、路由、About 动态、CMS API 删除） |
+| 公网页 | 无音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
+| 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层 |
+| 控制台 | 顶栏/设置与静态站对齐；图床走本机 R2 |
+
+下方仍保留上游使用说明，便于对照；以 AboutVPS `04` 为生产权威。
+
 ---
 ## 语言
 

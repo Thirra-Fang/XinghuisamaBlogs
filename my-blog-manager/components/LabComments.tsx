@@ -11,37 +11,43 @@ import { siteConfig } from '../siteConfig';
 export default function LabComments({ pageId }: { pageId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const cfg = siteConfig.gitalkConfig;
+  const enabled = Boolean(cfg?.clientID && cfg?.clientSecret && cfg?.repo && cfg?.owner);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!enabled || !containerRef.current) return;
 
-    // 清空之前的评论区，防止切换月份时叠加
     containerRef.current.innerHTML = '';
-
-    // 优先使用传入的 pageId (如 workshop-2026-05)
     const finalId = (pageId || pathname.replace(/\/$/, '') || '/').substring(0, 49);
 
-    const gitalk = new Gitalk({
-      clientID: siteConfig.gitalkConfig.clientID,
-      clientSecret: siteConfig.gitalkConfig.clientSecret,
-      repo: siteConfig.gitalkConfig.repo,
-      owner: siteConfig.gitalkConfig.owner,
-      admin: siteConfig.gitalkConfig.admin,
-      proxy: '/api/github',
-      id: finalId, // 这里的 ID 决定了留言板对应 GitHub 的哪个 Issue
-      distractionFreeMode: false,
-    });
-
-    gitalk.render(containerRef.current);
-
-    // 擦除 URL 中的 OAuth 凭证，防止刷新报错
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('code')) {
-      url.searchParams.delete('code');
-      window.history.replaceState({}, document.title, url.toString());
+    try {
+      const gitalk = new Gitalk({
+        clientID: cfg.clientID,
+        clientSecret: cfg.clientSecret,
+        repo: cfg.repo,
+        owner: cfg.owner,
+        admin: cfg.admin,
+        proxy: '/api/github',
+        id: finalId,
+        distractionFreeMode: false,
+      });
+      gitalk.render(containerRef.current);
+    } catch (e) {
+      console.warn('Lab Gitalk render skipped:', e);
     }
 
-  }, [pathname, pageId]);
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('code')) {
+        url.searchParams.delete('code');
+        window.history.replaceState({}, document.title, url.toString());
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [pathname, pageId, enabled, cfg]);
+
+  if (!enabled) return null;
 
   return (
     <div className="w-full mt-16 relative">
