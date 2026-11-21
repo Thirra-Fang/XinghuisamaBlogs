@@ -21,9 +21,9 @@ export default function LatestChatterCarousel({ chatters }: { chatters: any[] })
   const currentChatter = chatters[currentIndex];
 
   const holoVariants = {
-    initial: { opacity: 0, scale: 0.95, filter: "blur(10px)" },
-    animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
-    exit: { opacity: 0, scale: 1.05, filter: "blur(10px)" },
+    initial: { opacity: 0, scale: 0.98 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 1.02 },
   };
 
   return (
@@ -38,7 +38,7 @@ export default function LatestChatterCarousel({ chatters }: { chatters: any[] })
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
           className="absolute inset-0 z-0"
         >
           <img src={currentChatter.cover} className="w-full h-full object-cover opacity-80 dark:opacity-60 transition-transform duration-1000 group-hover:scale-105" alt="Chatter Cover" />

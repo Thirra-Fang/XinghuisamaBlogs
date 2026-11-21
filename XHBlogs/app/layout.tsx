@@ -40,13 +40,13 @@ export const metadata: Metadata = {
 
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
+    <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-300">
       <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
         {!siteConfig.useGradient && <BackgroundSlider />}
-        <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000"></div>
+        <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-300"></div>
 
         <div
-          className="absolute inset-0 z-[-8] opacity-60 dark:opacity-20 mix-blend-color transition-opacity duration-1000 transform-gpu"
+          className="absolute inset-0 z-[-8] opacity-60 dark:opacity-20 mix-blend-color transition-opacity duration-300 transform-gpu"
           style={{
             background: `linear-gradient(-45deg, ${siteConfig.themeColors.join(', ')})`,
             backgroundSize: '400% 400%',
@@ -118,7 +118,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
 
-      <body className="w-screen overflow-x-hidden min-h-full flex flex-col relative transition-colors duration-1000 bg-slate-50 dark:bg-slate-950 font-serif">
+      <body className="w-screen overflow-x-hidden min-h-full flex flex-col relative transition-colors duration-300 bg-slate-50 dark:bg-slate-950 font-serif">
         <ThemeProvider>
 
           <SplashScreen />

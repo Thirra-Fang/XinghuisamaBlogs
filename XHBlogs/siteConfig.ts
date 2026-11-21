@@ -36,8 +36,8 @@ export const siteConfig = {
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   social: {
     github: "",
-    gitee: "",
-    google: "",
+    bilibili: "",
+    netease: "",
     email: "",
     qq: "1124533793",
     wechat: "XingHuisama",

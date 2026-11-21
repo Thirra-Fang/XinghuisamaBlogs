@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Build pure static site into out/ for nginx (AboutVPS reality-fallback).
- * Temporarily parks app/api and app/music so next export succeeds.
+ * Temporarily parks app/api, app/music, app/tree, app/moments so next export succeeds.
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -9,10 +9,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const apiDir = path.join(root, 'app', 'api');
-const apiPark = path.join(root, '.static-park', 'api');
-const musicDir = path.join(root, 'app', 'music');
-const musicPark = path.join(root, '.static-park', 'music');
+const parkRoot = path.join(root, '.static-park');
+
+const parks = [
+  { src: path.join(root, 'app', 'api'), dest: path.join(parkRoot, 'api') },
+  { src: path.join(root, 'app', 'music'), dest: path.join(parkRoot, 'music') },
+  { src: path.join(root, 'app', 'tree'), dest: path.join(parkRoot, 'tree') },
+  { src: path.join(root, 'app', 'moments'), dest: path.join(parkRoot, 'moments') },
+];
 
 function park(src, dest) {
   if (!fs.existsSync(src)) return false;
@@ -28,22 +32,25 @@ function restore(src, dest) {
   fs.renameSync(src, dest);
 }
 
-let parkedApi = false;
-let parkedMusic = false;
+const parked = parks.map(() => false);
 
 process.on('exit', () => {
   try {
-    if (parkedApi) restore(apiPark, apiDir);
-    if (parkedMusic) restore(musicPark, musicDir);
+    parks.forEach((p, i) => {
+      if (parked[i]) restore(p.dest, p.src);
+    });
   } catch (e) {
     console.error('[build-static] restore on exit failed:', e);
   }
 });
 
 try {
-  parkedApi = park(apiDir, apiPark);
-  parkedMusic = park(musicDir, musicPark);
-  console.log(`[build-static] parked api=${parkedApi} music=${parkedMusic}`);
+  parks.forEach((p, i) => {
+    parked[i] = park(p.src, p.dest);
+  });
+  console.log(
+    `[build-static] parked api=${parked[0]} music=${parked[1]} tree=${parked[2]} moments=${parked[3]}`
+  );
 
   const env = {
     ...process.env,
@@ -69,12 +76,10 @@ try {
   }
   console.log('[build-static] OK →', outDir);
 } finally {
-  if (parkedApi) {
-    restore(apiPark, apiDir);
-    parkedApi = false;
-  }
-  if (parkedMusic) {
-    restore(musicPark, musicDir);
-    parkedMusic = false;
-  }
+  parks.forEach((p, i) => {
+    if (parked[i]) {
+      restore(p.dest, p.src);
+      parked[i] = false;
+    }
+  });
 }

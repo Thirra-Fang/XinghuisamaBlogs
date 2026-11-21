@@ -34,7 +34,7 @@ export default function LatestPostsCarousel({ posts }: { posts: any[] }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.35 }}
           className="absolute inset-0 z-0"
         >
           <img src={currentPost.cover} className="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-105" alt={currentPost.title} />
