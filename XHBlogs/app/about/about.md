@@ -3,13 +3,12 @@ title: 关于我
 date: '2026-03-31 03:10:19'
 tags: []
 mood: ''
-cover: https://img.thirra.com/blog/2026/11/21/03a6af878b0a-f729de4476a5f8dacff49076e0412708.jpg
+cover: https://img.thirra.com/blog/2026/11/21/c4d283a3f4f9-ccc8fc2e0708283873ddf214fe99a9014d08f113_edit.jpg
 description: ''
 ---
 
 个人简介
 
-  
 ‍
 
 微光透过薄暮，给你走遍黑暗的理由  

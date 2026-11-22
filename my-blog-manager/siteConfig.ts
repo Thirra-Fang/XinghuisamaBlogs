@@ -3,7 +3,7 @@
 export const siteConfig = {
   // 1. 网站标题与博主信息
   title: "Thirra の 自我同一性",
-  faviconUrl: "https://img.thirra.com/imageQcut.png",
+  faviconUrl: "https://img.thirra.com/blog/2026/11/21/150fd8f0b3be-forehead-mark-logo.png",
   authorName: "Thirra",
   bio: "微光透过薄暮，给你走遍黑暗的理由。\nShimmering light through the twilight‚ search the darkness by your side․",
 
@@ -48,7 +48,7 @@ export const siteConfig = {
     photos: 128, // 照片墙数量可以手动写死或动态计算
   },
   chatterTitle: "云端杂谈", // 你可以改成任何你喜欢的名字
-  chatterDescription: "代码、学术、提瓦特与泰拉大陆的碎片记录",
+  chatterDescription: "‘请你告诉我，于此我该走哪条路？’‘很大程度上，这取决于你想到达何处’",
 
   // 图床已改用本机 ~/.config/AboutVPS/r2.env（Cloudflare R2）；勿把密钥写进本文件
   picBedName: "Cloudflare R2",

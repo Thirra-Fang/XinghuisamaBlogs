@@ -3,6 +3,14 @@ export interface Friend { id: string; name: string; url: string; description: st
 
 export const friendsData: Friend[] = [
   {
+    "id": "friend_1795301962112",
+    "name": "memostudio",
+    "url": "https://memostudio.cn/",
+    "avatar": "https://img.thirra.com/blog/2026/11/21/db8e6721fcc7-favicon.svg",
+    "description": "我所在/曾所在的学校游戏工作室，推广！",
+    "themeColor": "#6366f1"
+  },
+  {
     "id": "friend_1795287659458",
     "name": "深海黑鱼",
     "url": "https://shhy.work",
