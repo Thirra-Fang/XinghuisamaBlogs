@@ -31,6 +31,10 @@
     --tw-prose-links: var(--color-indigo-400);
   }
 
+  .prose .katex-display {
+    overflow-x: auto;
+  }
+
   [class*="backdrop-blur-"] {
     -webkit-backdrop-filter: blur(12px);
   }

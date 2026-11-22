@@ -21,11 +21,12 @@
 
 | 项 | 本 fork |
 |----|---------|
-| 公网形态 | `npm run build:static` + `deploy-fallback-site-remote.sh`（**全量 tar** 上传 `out/`，非增量 rsync） |
+| 公网形态 | `STATIC_EXPORT` + AboutVPS **全量 tar** 上线（非增量 rsync）；**不是**下文 Vercel 双轨 |
 | 说说 | **已退役**（目录、路由、About 动态、CMS API 删除） |
 | 公网页 | 无音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
-| 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层 |
-| 控制台 | 顶栏/设置与静态站对齐；无 `MusicProvider` / 详情无 `SidebarLyric`；图床走本机 R2 |
+| 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层；列表/归档为纯文本摘要 |
+| Markdown 公式 | TipTap 写 `$...$` / `$$...$$`；保存保护下标；详情 KaTeX；列表不渲染公式 |
+| 控制台 | 无双轨 UI；**同步 Blog** = 镜像 + 远程部署（日志弹窗）；**git推送** = monorepo；桌面「XHBlogs 控制台」；无 `MusicProvider` / 无 `SidebarLyric`；图床走本机 R2 |
 | 图床 | 设置 → 图库可**批量上传**；编辑器图床工作台单张上传；凭证 `~/.config/AboutVPS/r2.env` |
 
 下方仍保留上游使用说明，便于对照；以 AboutVPS `04` 为生产权威。改功能时请同步更新 AboutVPS `04`、本 README fork 表与 `UpdateLog.md`。
@@ -354,22 +355,19 @@ Vercel 默认会为你分配一个免费的二级域名：
 
 ![同步Blog](picture/Pasted%20image%2020260427125800.png)
 
-博客文章、说说（碎碎念）、杂谈等所有内容的发布与修改，均遵循此流程。
+博客文章、杂谈等所有内容的发布与修改，均遵循此流程。
 
 > **💡 黄金法则**：暂存队列 -> 更新本地 -> 同步Blog
+
+> **本 fork**：点 **同步 Blog** 会镜像到 `XHBlogs` 并自动执行 AboutVPS 远程静态部署（日志弹窗）；公网不是 Vercel。需要把源码推到 GitHub 时，在同一操作栏填写 commit message 后点 **git推送**（monorepo 根目录）。详见 [AboutVPS/04](../AboutVPS/04-静态展示站.md)。
 
 ---
 
 ## 三、如何推送你的修改到线上网页？
 
-当你在本地完成了满意的创作或设置调整，想要将其发布到公网让所有人看到时：
+**本 fork（thirra.com）**：更新本地 → **同步 Blog** 即可上线（构建 + 全量 tar 到 VPS）。无需「仅同步源码 / Vercel」。
 
-请牢记，在执行了任何实质性修改并点击 **[同步Blog]** 后，请打开控制台的同步部署页面：
-
-![打开同步](picture/Pasted%20image%2020260427130216.png)
-
-确认“B线”地址正确无误，点击 **[仅同步源码]**。
-等待 GitHub Actions 或 Vercel 自动捕获更新。稍作喝杯茶的功夫，你就能在线上页面看到最新鲜的内容了！
+**上游默认路径（Vercel 双轨）**：同步 Blog 后打开设置里的双轨部署，点「仅同步源码」，等 Vercel 构建。下列截图与步骤针对上游；本 fork 已去掉该 UI。
 
 ---
 

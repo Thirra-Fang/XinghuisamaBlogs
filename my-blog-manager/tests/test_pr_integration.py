@@ -7,7 +7,11 @@ from unittest.mock import patch
 from bs4 import BeautifulSoup
 
 from cms_core.api import config, drafts
-from cms_core.content import editor_html_to_markdown, markdown_to_editor_html
+from cms_core.content import (
+    editor_html_to_markdown,
+    markdown_to_editor_html,
+    unescape_math_underscores,
+)
 
 
 class Request:
@@ -55,6 +59,29 @@ class ContentRoundtripTests(unittest.TestCase):
         soup = BeautifulSoup(markdown_to_editor_html('`~~literal~~` and ~~removed~~'), 'html.parser')
         self.assertEqual(soup.code.get_text(), '~~literal~~')
         self.assertEqual(soup.find('del').get_text(), 'removed')
+
+    def test_math_subscripts_not_escaped_on_save(self):
+        md = editor_html_to_markdown('<p>hello $x_i$ world</p>')
+        self.assertIn('$x_i$', md)
+        self.assertNotIn('$x\\_i$', md)
+
+    def test_display_math_subscripts_not_escaped(self):
+        md = editor_html_to_markdown('<p>offset $b_0$ and $$\\sum_{i=1}^{N} w_i$$</p>')
+        self.assertIn('$b_0$', md)
+        self.assertIn('$$\\sum_{i=1}^{N} w_i$$', md)
+        self.assertNotIn('\\_', md)
+
+    def test_unescape_math_underscores_repairs_disk(self):
+        broken = 'offset $b\\_0$ and $$\\sum\\_{i=1}^{N} w\\_i$$\n\noutside a\\_b ok'
+        fixed = unescape_math_underscores(broken)
+        self.assertIn('$b_0$', fixed)
+        self.assertIn('$$\\sum_{i=1}^{N} w_i$$', fixed)
+        self.assertIn('a\\_b', fixed)
+
+    def test_sub_sup_kept_as_html(self):
+        md = editor_html_to_markdown('<p>H<sub>2</sub>O and x<sup>2</sup></p>')
+        self.assertIn('<sub>2</sub>', md)
+        self.assertIn('<sup>2</sup>', md)
 
     def test_publish_and_reload_existing_article(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(drafts, 'PROJECT_ROOT', directory):

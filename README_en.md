@@ -1,6 +1,6 @@
 # This fork / static production (AboutVPS)
 
-Public `thirra.com` uses `STATIC_EXPORT=1` → `out/` → AboutVPS `deploy-fallback-site-remote.sh` (**full tar** upload to `/var/www/reality-fallback`, not incremental rsync). Ops, R2 picbed (including **batch upload** in Settings → Gallery), and fork deltas: **[AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md)** and the Chinese [`README.md`](README.md) fork table. Prefer those over the upstream Vercel / pets / 7bu sections below when working on this fork.
+Public `thirra.com` uses `STATIC_EXPORT=1` → `out/` → AboutVPS `deploy-fallback-site-remote.sh` (**full tar** upload to `/var/www/reality-fallback`, not incremental rsync). In this fork the console **Sync Blog** mirrors into `XHBlogs` and runs that deploy with a live log dialog; **git push** in the ops menu commits the monorepo root only (not the site). Dual-track Vercel/GitHub Pages UI is removed. Desktop/start-menu shortcut: **XHBlogs 控制台**. Ops, R2 picbed (including **batch upload** in Settings → Gallery), and fork deltas: **[AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md)** and the Chinese [`README.md`](README.md) fork table. Prefer those over the upstream Vercel / pets / 7bu sections below when working on this fork.
 
 # Version 0.4.5 - Pet Selection and Markdown Sanitization
 

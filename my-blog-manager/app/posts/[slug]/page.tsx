@@ -3,14 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
 
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkGfm from 'remark-gfm'; // 🌟 核心引入：支持删除线和表格等 GFM 语法
-import remarkRehype from 'remark-rehype';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeStringify from 'rehype-stringify';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import { renderMarkdown } from '../../../lib/renderMarkdown.mjs';
 
 // 引入高亮主题
 import 'highlight.js/styles/atom-one-dark.css';
@@ -94,26 +87,11 @@ async function getPostData(slug: string) {
 
   // ==========================================
 
-  const processedContent = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkMath)
-    // 🌟 allowDangerousHtml 必须开启，这样上面生成的 <br/> 才能顺利通过变成真正的换行！
-    .use(remarkRehype, { allowDangerousHtml: true })
-    // 🌟 核心升级：开启代码语言自动侦测，并限制白名单，大幅提高 C++ 和常用语言的猜中率！
-    // @ts-ignore
-    .use(rehypeHighlight, {
-      detect: true,
-      ignoreMissing: true,
-      subset: ['cpp', 'c', 'python', 'java', 'javascript', 'typescript', 'go', 'rust', 'bash', 'json', 'html', 'css', 'sql', 'xml']
-    })
-    .use(rehypeKatex)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(content);
+  const contentHtml = await renderMarkdown(content);
 
   return {
     slug,
-    contentHtml: processedContent.toString(),
+    contentHtml,
     toc: extractToc(content),
     title: data.title,
     date: data.date,

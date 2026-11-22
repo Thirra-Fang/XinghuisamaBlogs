@@ -4,15 +4,7 @@ import matter from 'gray-matter';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-// 🌟 1. 核心升级：引入现代统一解析流，并挂载 remark-gfm
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkGfm from 'remark-gfm'; // 🌟 引入 GFM 以支持 ~~删除线~~
-import remarkMath from 'remark-math';
-import remarkRehype from 'remark-rehype';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeStringify from 'rehype-stringify';
-import rehypeKatex from 'rehype-katex';
+import { renderMarkdown } from '../../lib/renderMarkdown.mjs';
 import 'highlight.js/styles/atom-one-dark.css';
 import 'katex/dist/katex.min.css';
 
@@ -76,24 +68,7 @@ export default async function AdminAboutPage() {
     }).join('');
     // ==========================================
 
-    // 🌟 2. 启用全新解析引擎：支持代码高亮与删除线
-    const processedContent = await unified()
-      .use(remarkParse)
-      .use(remarkGfm) // 🌟 挂载 GFM 解析
-      .use(remarkMath)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      // 🌟 核心升级：开启自动侦测，并限制白名单，大幅提高 C++ 等语言的猜中率
-      // @ts-ignore
-      .use(rehypeHighlight, {
-        detect: true,
-        ignoreMissing: true,
-        subset: ['cpp', 'c', 'python', 'java', 'javascript', 'typescript', 'go', 'rust', 'bash', 'json', 'html', 'css', 'sql', 'xml']
-      })
-      .use(rehypeKatex)
-      .use(rehypeStringify, { allowDangerousHtml: true })
-      .process(content);
-
-    contentHtml = processedContent.toString();
+    contentHtml = await renderMarkdown(content);
   } catch (e) {
     console.error("读取 about.md 失败", e);
   }

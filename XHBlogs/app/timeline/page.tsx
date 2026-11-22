@@ -7,6 +7,8 @@ import { siteConfig } from '../../siteConfig';
 import TimelineClient from '../../components/TimelineClient';
 // 🌟 1. 引入 ToastProvider 喵！
 import { ToastProvider } from '../../components/ToastProvider';
+import { mdExcerpt } from '../../lib/mdExcerpt';
+
 
 export const metadata = {
   title: "归档与探索 | " + siteConfig.title,
@@ -38,7 +40,7 @@ export default function Timeline() {
           slug,
           title: data.title || '无标题',
           date: data.date || '1970-01-01',
-          description: data.description || '',
+          description: mdExcerpt(data.description || ''),
           tags: postTags,
           cover: data.cover || siteConfig.defaultPostCover,
         });

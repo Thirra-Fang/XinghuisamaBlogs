@@ -5,6 +5,8 @@ import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import { siteConfig } from '../../siteConfig';
 import TimelineClient from '../../components/TimelineClient';
+import { mdExcerpt } from '../../lib/mdExcerpt';
+
 
 export default function Timeline() {
   const postsDirectory = path.join(process.cwd(), 'posts');
@@ -33,7 +35,7 @@ export default function Timeline() {
           slug,
           title: data.title || '无标题',
           date: data.date || '1970-01-01',
-          description: data.description || '',
+          description: mdExcerpt(data.description || ''),
           tags: postTags,
           cover: data.cover || siteConfig.defaultPostCover,
           // 删除了坑人的 mtime

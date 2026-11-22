@@ -26,6 +26,48 @@ def markdown_to_editor_html(content):
     )
 
 
+_DISPLAY_MATH_RE = re.compile(r'\$\$(.+?)\$\$', re.DOTALL)
+# Inline: single $...$ not part of $$
+_INLINE_MATH_RE = re.compile(r'(?<!\$)\$(?!\$)((?:\\.|[^$])+?)\$(?!\$)', re.DOTALL)
+_PRE_BLOCK_RE = re.compile(r'<pre\b[^>]*>.*?</pre>', re.IGNORECASE | re.DOTALL)
+
+
+def _stash_math_segments(text: str, token_prefix: str) -> tuple[str, dict[str, str]]:
+    """Replace $...$ / $$...$$ with placeholders so markdownify cannot escape _ inside them."""
+    store: dict[str, str] = {}
+
+    def stash(match: re.Match, kind: str) -> str:
+        token = f'{token_prefix}{kind}{len(store)}END'
+        store[token] = match.group(0)
+        return token
+
+    # Protect <pre> so code dollar signs are not treated as math.
+    pre_store: dict[str, str] = {}
+
+    def stash_pre(match: re.Match) -> str:
+        token = f'{token_prefix}PRE{len(pre_store)}END'
+        pre_store[token] = match.group(0)
+        return token
+
+    work = _PRE_BLOCK_RE.sub(stash_pre, text)
+    work = _DISPLAY_MATH_RE.sub(lambda m: stash(m, 'DMATH'), work)
+    work = _INLINE_MATH_RE.sub(lambda m: stash(m, 'IMATH'), work)
+    for token, block in pre_store.items():
+        work = work.replace(token, block)
+    return work, store
+
+
+def unescape_math_underscores(markdown_text: str) -> str:
+    """Inside math delimiters only, turn \\_ into _ (repair / safety net)."""
+
+    def fix_chunk(match: re.Match) -> str:
+        return match.group(0).replace('\\_', '_')
+
+    text = _DISPLAY_MATH_RE.sub(fix_chunk, markdown_text)
+    text = _INLINE_MATH_RE.sub(fix_chunk, text)
+    return text
+
+
 class EditorMarkdownConverter(MarkdownConverter):
     def __init__(self):
         super().__init__(heading_style='ATX', keep=['img', 'br'])
@@ -51,12 +93,23 @@ class EditorMarkdownConverter(MarkdownConverter):
         self.code_blocks[token] = f'{fence}{language}\n{body}{fence}'
         return '\n\n' + token + '\n\n'
 
+    def convert_sub(self, el, text, parent_tags):
+        return f'<sub>{text}</sub>'
+
+    def convert_sup(self, el, text, parent_tags):
+        return f'<sup>{text}</sup>'
+
+
 
 def editor_html_to_markdown(content):
     content = re.sub(r'<p>(?:&#12288;)?</p>', '<br><br>', content)
+    math_prefix = 'XHMATH' + uuid4().hex
+    content, math_blocks = _stash_math_segments(content, math_prefix)
     converter = EditorMarkdownConverter()
     converted = converter.convert(content)
     converted = re.sub(r'<br\s*/?>', '\n\n', converted)
     for token, block in converter.code_blocks.items():
         converted = converted.replace(token, block)
-    return converted
+    for token, block in math_blocks.items():
+        converted = converted.replace(token, block)
+    return unescape_math_underscores(converted)

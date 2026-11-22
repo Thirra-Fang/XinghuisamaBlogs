@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import Navbar from '../../components/Navbar';
 import ChatterBoard from './ChatterBoard';
 import { siteConfig } from '@/siteConfig';
+import { mdExcerpt } from '../../lib/mdExcerpt';
 
 
 export const metadata = {
@@ -36,7 +37,7 @@ export default function ChatterPage() {
         tags: data.tags || [],
         mood: data.mood || '',
         cover: data.cover || '',
-        content: content.replace(/^#+ .*\n/m, '') // 去除开头的 markdown 标题以优化截取显示
+        content: mdExcerpt(content.replace(/^#+ .*\n/m, ''))
       };
     }).sort((a, b) => (new Date(b.date).getTime() - new Date(a.date).getTime())); // 按时间倒序
   } catch (e) {

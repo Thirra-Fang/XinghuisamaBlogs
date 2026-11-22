@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOperations } from '../context/OperationContext';
@@ -10,6 +10,8 @@ import { AlertTriangle } from 'lucide-react';
 import { siteConfig } from '../siteConfig';
 import { fetchBlogPath, storageGet } from '../lib/safeStorage';
 
+type PublishStatus = 'idle' | 'running' | 'done' | 'error';
+
 export default function Navbar({ previewOnly = false, compact = false }: { previewOnly?: boolean; compact?: boolean }) {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -17,6 +19,14 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
   const [syncModalOpen, setSyncModalOpen] = useState(false);
   const [targetBlogPath, setTargetBlogPath] = useState("");
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<PublishStatus>('idle');
+  const [publishPhase, setPublishPhase] = useState('');
+  const [publishLogs, setPublishLogs] = useState<string[]>([]);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [commitMessage, setCommitMessage] = useState('');
+  const [isGitPushing, setIsGitPushing] = useState(false);
+  const logEndRef = useRef<HTMLDivElement | null>(null);
 
   const pathname = usePathname();
   const { operations, removeOperation, clearOperations } = useOperations();
@@ -41,6 +51,10 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  useEffect(() => {
+    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [publishLogs]);
 
   // Aligned with static site: no music / moments / tree
   const navLinks = [
@@ -71,7 +85,12 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
     }
   };
 
-  // 🌟 监控增强版更新逻辑
+  const getApiBase = async () => {
+    const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
+    const configData = await configRes.json();
+    return `http://127.0.0.1:${configData.api_port}`;
+  };
+
   const handleUpdateLocal = async () => {
       if (operations.length === 0) {
         showToast("队列中没有待处理的操作", "warning");
@@ -80,10 +99,7 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
       try {
         showToast(`🔍 正在准备发送 ${operations.length} 个任务...`, "info");
-
-        const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-        const configData = await configRes.json();
-        const apiBase = `http://127.0.0.1:${configData.api_port}`;
+        const apiBase = await getApiBase();
 
         for (const op of operations) {
           let apiUrl = '';
@@ -149,28 +165,133 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
     setSyncModalOpen(true);
   };
 
+  const appendLog = (line: string) => {
+    setPublishLogs(prev => [...prev, line]);
+  };
+
   const executeSyncBlog = async () => {
     setSyncModalOpen(false);
+    setPublishOpen(true);
+    setPublishStatus('running');
+    setPublishPhase('准备中');
+    setPublishLogs([]);
+    setIsPublishing(true);
 
     try {
-      const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-      const configData = await configRes.json();
-      showToast("🚀 正在镜像数据至目标项目，请稍候...", "info");
-
-      const res = await fetch(`http://127.0.0.1:${configData.api_port}/api/sync/execute`, {
+      const apiBase = await getApiBase();
+      const res = await fetch(`${apiBase}/api/sync/publish-remote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blogPath: targetBlogPath })
       });
 
+      if (!res.ok || !res.body) {
+        setPublishStatus('error');
+        appendLog(`请求失败: HTTP ${res.status}`);
+        showToast("无法启动同步与远程部署", "error");
+        setIsPublishing(false);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n');
+        buffer = parts.pop() || '';
+
+        for (const raw of parts) {
+          const line = raw.trim();
+          if (!line) continue;
+          try {
+            const evt = JSON.parse(line);
+            if (evt.type === 'phase') {
+              setPublishPhase(evt.message || evt.phase || '');
+              appendLog(`[阶段] ${evt.message || evt.phase}`);
+            } else if (evt.type === 'log') {
+              appendLog(evt.line ?? '');
+            } else if (evt.type === 'done') {
+              setPublishStatus('done');
+              setPublishPhase(evt.message || '完成');
+              appendLog(evt.message || '完成');
+              showToast(evt.message || '同步并远程部署完成', 'success');
+            } else if (evt.type === 'error') {
+              setPublishStatus('error');
+              setPublishPhase(evt.message || '失败');
+              appendLog(`[错误] ${evt.message || '未知错误'}`);
+              showToast(evt.message || '同步失败', 'error');
+            }
+          } catch {
+            appendLog(line);
+          }
+        }
+      }
+
+      if (buffer.trim()) {
+        try {
+          const evt = JSON.parse(buffer.trim());
+          if (evt.type === 'done') {
+            setPublishStatus('done');
+            showToast(evt.message || '同步并远程部署完成', 'success');
+          } else if (evt.type === 'error') {
+            setPublishStatus('error');
+            showToast(evt.message || '同步失败', 'error');
+          }
+          appendLog(evt.message || evt.line || buffer.trim());
+        } catch {
+          appendLog(buffer.trim());
+        }
+      }
+
+      setPublishStatus(prev => (prev === 'running' ? 'done' : prev));
+    } catch (error: any) {
+      setPublishStatus('error');
+      appendLog(`连接异常: ${error?.message || error}`);
+      showToast("无法连接到 Python 桌面核心引擎进行同步", "error");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const cancelPublish = async () => {
+    try {
+      const apiBase = await getApiBase();
+      await fetch(`${apiBase}/api/sync/publish-cancel`, { method: 'POST' });
+      appendLog('[系统] 已请求取消…');
+    } catch {
+      appendLog('[系统] 取消请求失败');
+    }
+  };
+
+  const handleGitPush = async () => {
+    const message = commitMessage.trim();
+    if (!message) {
+      showToast('请填写 git commit message', 'warning');
+      return;
+    }
+    setIsGitPushing(true);
+    try {
+      const apiBase = await getApiBase();
+      const res = await fetch(`${apiBase}/api/git/commit-push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
       const data = await res.json();
       if (data.success) {
-        showToast(data.message, "success");
+        showToast(data.message, 'success');
+        setCommitMessage('');
       } else {
-        showToast(`❌ 同步失败: ${data.message}`, "error");
+        showToast(data.message || 'git 推送失败', 'error');
       }
-    } catch (error) {
-      showToast("无法连接到 Python 桌面核心引擎进行同步", "error");
+    } catch (error: any) {
+      showToast(`git 推送异常: ${error?.message || error}`, 'error');
+    } finally {
+      setIsGitPushing(false);
     }
   };
 
@@ -211,13 +332,13 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
               <AnimatePresence>
                 {isOpBoxOpen && (
-                  <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-3 w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 z-50 cursor-default">
+                  <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-3 w-96 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 z-50 cursor-default">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">待处理操作</h3>
                       <button onClick={clearOperations} className="text-[10px] text-red-500 font-bold hover:underline">清空全部</button>
                     </div>
 
-                    <div className="flex flex-col gap-2 max-h-64 overflow-y-auto mb-4 custom-scrollbar">
+                    <div className="flex flex-col gap-2 max-h-48 overflow-y-auto mb-4 custom-scrollbar">
                       {operations.length === 0 ? (
                         <p className="text-center py-6 text-sm text-slate-400 font-medium">暂无积攒的操作</p>
                       ) : (
@@ -234,11 +355,32 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
-                      <button onClick={handleSyncBlogClick} className="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                      <button
+                        onClick={handleSyncBlogClick}
+                        disabled={isPublishing}
+                        className="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                      >
                         🔄 同步 Blog
                       </button>
                       <button onClick={handleUpdateLocal} className="py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 transition-colors">
                         🚀 更新本地
+                      </button>
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      <input
+                        type="text"
+                        value={commitMessage}
+                        onChange={e => setCommitMessage(e.target.value)}
+                        placeholder="git commit message"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 py-2 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <button
+                        onClick={handleGitPush}
+                        disabled={isGitPushing}
+                        className="w-full py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                      >
+                        {isGitPushing ? '推送中…' : 'git推送'}
                       </button>
                     </div>
                   </motion.div>
@@ -266,20 +408,70 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
         {syncModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSyncModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" />
-            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-sm bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-[40px] shadow-2xl border border-white/50 p-10 text-center">
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-[40px] shadow-2xl border border-white/50 p-10 text-center">
               <div className="w-16 h-16 bg-amber-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <AlertTriangle className="text-amber-500" size={32} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">系统镜像覆盖</h3>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">同步并部署到 VPS</h3>
               <p className="text-sm text-slate-500 mb-8 leading-relaxed text-balance">
-                确认将管理端数据覆盖至<br />
-                <span className="font-bold text-amber-500 break-all">{targetBlogPath}</span> 吗？<br />
-                <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">此操作将清空目标项目的旧文章与配置！</span>
+                将管理端数据覆盖到<br />
+                <span className="font-bold text-amber-500 break-all">{targetBlogPath}</span>
+                <br />
+                然后执行静态构建并上传到远端服务器。
+                <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">会清空目标站旧文章/配置，构建与上传可能需要数分钟。</span>
               </p>
               <div className="flex gap-3">
                 <button onClick={() => setSyncModalOpen(false)} className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-xs font-black uppercase transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">取消</button>
-                <button onClick={executeSyncBlog} className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-amber-500/30 transition-all">确认覆盖</button>
+                <button onClick={executeSyncBlog} className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-amber-500/30 transition-all">确认同步</button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {publishOpen && (
+          <div className="fixed inset-0 z-[210] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/50 backdrop-blur-md" />
+            <motion.div initial={{ scale: 0.95, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/50 p-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white">同步与远程部署</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    状态：{publishStatus === 'running' ? '进行中' : publishStatus === 'done' ? '成功' : publishStatus === 'error' ? '失败' : '—'}
+                    {publishPhase ? ` · ${publishPhase}` : ''}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {isPublishing && (
+                    <button onClick={cancelPublish} className="px-3 py-2 rounded-xl text-xs font-black bg-red-500/10 text-red-600 hover:bg-red-500/20">
+                      取消
+                    </button>
+                  )}
+                  <button
+                    onClick={() => !isPublishing && setPublishOpen(false)}
+                    disabled={isPublishing}
+                    className="px-3 py-2 rounded-xl text-xs font-black bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 disabled:opacity-40"
+                  >
+                    关闭
+                  </button>
+                </div>
+              </div>
+              <div className="h-80 overflow-y-auto rounded-2xl bg-slate-950 text-emerald-300 font-mono text-[11px] leading-5 p-4 border border-slate-800 custom-scrollbar">
+                {publishLogs.length === 0 ? (
+                  <p className="text-slate-500">等待日志…</p>
+                ) : (
+                  publishLogs.map((line, i) => (
+                    <div key={`${i}-${line.slice(0, 24)}`} className="whitespace-pre-wrap break-all">{line}</div>
+                  ))
+                )}
+                <div ref={logEndRef} />
+              </div>
+              {isPublishing && (
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                  <div className="h-full w-1/3 animate-pulse rounded-full bg-indigo-500" />
+                </div>
+              )}
             </motion.div>
           </div>
         )}

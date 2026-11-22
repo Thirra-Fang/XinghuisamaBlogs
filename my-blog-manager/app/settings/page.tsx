@@ -182,7 +182,7 @@ function SettingsContent() {
               {activeTab === 'repo' && backendMode === 'live' && <RepoSection key="repo" />}
             </AnimatePresence>
             </fieldset>
-            {activeTab === 'repo' && backendMode !== 'live' && <section className="rounded-3xl border border-white/60 bg-white/60 p-8 text-sm leading-8 text-slate-600 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300"><h2 className="mb-3 text-lg font-semibold">项目仓库设置</h2>原有仓库配置和发布功能已保留。此副本尚未连接网站通用后台，接通后可以在这里管理；当前不会读取密钥或执行发布。</section>}
+            {activeTab === 'repo' && backendMode !== 'live' && <section className="rounded-3xl border border-white/60 bg-white/60 p-8 text-sm leading-8 text-slate-600 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300"><h2 className="mb-3 text-lg font-semibold">项目仓库设置</h2>接通本机后台后可在此配置本地 Blog 路径。「同步 Blog」与 git 推送需 live 模式。</section>}
           </div>
 
         </main>

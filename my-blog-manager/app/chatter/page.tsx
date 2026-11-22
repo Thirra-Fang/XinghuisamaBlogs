@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import Navbar from '../../components/Navbar';
 import ChatterBoard from './ChatterBoard';
+import { mdExcerpt } from '../../lib/mdExcerpt';
 
 export const metadata = {
   title: "杂谈 | XingHuiSama の 博客",
@@ -32,7 +33,7 @@ export default function ChatterPage() {
         tags: data.tags || [],
         mood: data.mood || '',
         cover: data.cover || '',
-        content: content.replace(/^#+ .*\n/m, '')
+        content: mdExcerpt(content.replace(/^#+ .*\n/m, ''))
       };
     }).sort((a, b) => (new Date(b.date).getTime() - new Date(a.date).getTime()));
   } catch (e) {
