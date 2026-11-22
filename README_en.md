@@ -1,3 +1,7 @@
+# This fork / static production (AboutVPS)
+
+Public `thirra.com` uses `STATIC_EXPORT=1` → `out/` → AboutVPS `deploy-fallback-site-remote.sh` (**full tar** upload to `/var/www/reality-fallback`, not incremental rsync). Ops, R2 picbed (including **batch upload** in Settings → Gallery), and fork deltas: **[AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md)** and the Chinese [`README.md`](README.md) fork table. Prefer those over the upstream Vercel / pets / 7bu sections below when working on this fork.
+
 # Version 0.4.5 - Pet Selection and Markdown Sanitization
 
 In the local console, open Settings → Pet Display to choose CyberCat or Big Fish. Upgraded sites keep CyberCat by default. Big Fish supports dragging, size options, shared manual AI chat, optional browser-local tasks, and optional preset remarks that do not call AI.

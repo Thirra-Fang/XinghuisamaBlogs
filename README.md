@@ -21,13 +21,14 @@
 
 | 项 | 本 fork |
 |----|---------|
-| 公网形态 | `npm run build:static` + `deploy-fallback-site-remote.sh` |
+| 公网形态 | `npm run build:static` + `deploy-fallback-site-remote.sh`（**全量 tar** 上传 `out/`，非增量 rsync） |
 | 说说 | **已退役**（目录、路由、About 动态、CMS API 删除） |
 | 公网页 | 无音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
 | 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层 |
-| 控制台 | 顶栏/设置与静态站对齐；图床走本机 R2 |
+| 控制台 | 顶栏/设置与静态站对齐；无 `MusicProvider` / 详情无 `SidebarLyric`；图床走本机 R2 |
+| 图床 | 设置 → 图库可**批量上传**；编辑器图床工作台单张上传；凭证 `~/.config/AboutVPS/r2.env` |
 
-下方仍保留上游使用说明，便于对照；以 AboutVPS `04` 为生产权威。
+下方仍保留上游使用说明，便于对照；以 AboutVPS `04` 为生产权威。改功能时请同步更新 AboutVPS `04`、本 README fork 表与 `UpdateLog.md`。
 
 ---
 ## 语言
@@ -374,14 +375,21 @@ Vercel 默认会为你分配一个免费的二级域名：
 
 ## 四、图床配置
 
-为了优化写作体验，控制台深度整合了图床上传功能。本指南推荐使用“去不图床”（[https://7bu.top](https://7bu.top)）。
-如果你习惯使用纯外链，工具台也完美支持直接插入图片 URL。如果想接入其他支持标准 API 的图床，也欢迎极客们自行尝试。
+### 本 fork（生产在用）
 
-**配置流程：**
+公网图床为 **Cloudflare R2**（`https://img.thirra.com`）。凭证只放本机 `~/.config/AboutVPS/r2.env`，不要写进 git。  
+操作说明见 **[AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md)**：
+
+- **设置 → 图库**：测试连接、**批量上传**多张、刷新本地清单  
+- 写稿时 **图床工作台**：单张云端上传或外链插入  
+
+### 上游说明（对照用）
+
+上游文档曾推荐“去不图床”（[https://7bu.top](https://7bu.top)）等第三方图床；本 fork 生产路径以上述 R2 为准。若你仍按上游方式接入其它 API 图床，可自行配置。
 
 ![图床配置](picture/Pasted%20image%2020260427124930.png)
 
-填入对应的 API Token 等信息后，你可以点击 **[发送探针测试Token]**，实时检验图床接口是否畅通。
+（上游截图：填入 API Token 后可点 **[发送探针测试Token]**。本 fork 的探针对应设置页「测试 R2 连接」。）
 
 ---
 

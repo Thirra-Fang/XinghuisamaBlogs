@@ -1,7 +1,7 @@
 # XHBlogs 自托管部署（Debian + CachyOS 构建）
 
-> **备选路径**：本文是 Next.js **Node standalone** 自托管说明。  
-> 当前 **thirra.com / Reality 回落** 生产部署走的是纯静态导出，见旁路 **[AboutVPS/04-静态展示站.md](../../../AboutVPS/04-静态展示站.md)**（`build:static` + `deploy-fallback-site-remote.sh`）。  
+> **备选路径**：本文是 Next.js **Node standalone** 自托管说明（此处的 rsync 只服务本备选路径）。  
+> 当前 **thirra.com / Reality 回落** 生产部署走纯静态导出，见旁路 **[AboutVPS/04-静态展示站.md](../../../AboutVPS/04-静态展示站.md)**：`build:static` 后由 `deploy-fallback-site-remote.sh` **全量 tar** 上传 `out/`（**不是**增量 rsync）。  
 > 本 fork 已**退役说说（moments）**；若仍用本脚本部署 standalone，产物中不再包含 `moments/`。
 
 面向小内存 Debian 服务器：在 **CachyOS（或其它 x86_64 Linux）** 上构建 Next.js **standalone** 产物，用 **rsync** 同步到服务器，由 **systemd + nginx** 对外提供 **HTTPS（443）**。服务器上 **不要** 执行 `npm run build`。
