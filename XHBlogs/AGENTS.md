@@ -12,4 +12,4 @@ When changing site features, console parity, picbed, or deploy behavior for this
 2. Update repo root [`README.md`](../README.md) fork table if user-facing.
 3. Add a bullet under [`UpdateLog.md`](../UpdateLog.md) Unreleased.
 
-Do not ship code-only changes that leave those docs stale. Production deploy uses incremental rsync of `out/` via AboutVPS `deploy-fallback-site-remote.sh` (staging then atomic swap); the console **同步 Blog** invokes that script. No Vercel dual-track in this fork.
+Do not ship code-only changes that leave those docs stale. Production deploy uses incremental rsync of `out/` via monorepo [`scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh) (staging then atomic swap; hosts from `~/.config/AboutVPS/hosts.conf`); the console **同步 Blog** invokes that script. No Vercel dual-track in this fork.

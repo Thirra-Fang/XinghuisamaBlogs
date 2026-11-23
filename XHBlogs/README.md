@@ -9,12 +9,12 @@
 ```bash
 STATIC_EXPORT=1   # 由 npm run build:static / 脚本设置
 npm run build:static   # 产物 out/
-# 再跑旁路 AboutVPS：
-#   scripts/deploy-fallback-site-remote.sh
+# 再跑 monorepo 脚本（hosts 仍读 ~/.config/AboutVPS/hosts.conf）：
+#   ../scripts/deploy-fallback-site-remote.sh --yes
 # 将 out/ 以 rsync 增量同步到各机 /var/www/reality-fallback（原子切换）
 ```
 
-运维、R2 图床、fork 差异见 **[AboutVPS/04-静态展示站.md](../../AboutVPS/04-静态展示站.md)**。
+运维、R2 图床、fork 差异见 **[AboutVPS/04-静态展示站.md](../../AboutVPS/04-静态展示站.md)**；部署脚本在 **[`../scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh)**。
 
 改本站或控制台行为时，请同步更新该 `04`、仓库根 `README.md` fork 表与 `UpdateLog.md`。
 
@@ -45,6 +45,7 @@ npm run dev
 ## 相关文档
 
 - 仓库总览与控制台：[`../README.md`](../README.md)
-- 生产静态站（AboutVPS）：[`../../AboutVPS/04-静态展示站.md`](../../AboutVPS/04-静态展示站.md)
+- 生产静态站运维（AboutVPS）：[`../../AboutVPS/04-静态展示站.md`](../../AboutVPS/04-静态展示站.md)
+- 静态上线脚本：[`../scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh)
 - Node 自托管备选：[`deploy/README.md`](deploy/README.md)
 - 环境变量示例：[`.env.production.example`](.env.production.example)

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build pure static site into out/ for nginx (AboutVPS reality-fallback).
+ * Build pure static site into out/ for nginx (reality-fallback; deploy via ../scripts/deploy-fallback-site-remote.sh).
  * Temporarily parks app/api, app/music, app/tree so next export succeeds.
  * (说说 /moments 已从源码移除，无需再 park。)
  */

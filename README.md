@@ -21,7 +21,7 @@
 
 | 项 | 本 fork |
 |----|---------|
-| 公网形态 | `STATIC_EXPORT` + AboutVPS **rsync 增量**上线（原子切换）；**不是**下文 Vercel 双轨 |
+| 公网形态 | `STATIC_EXPORT` + monorepo `scripts/deploy-fallback-site-remote.sh` **rsync 增量**上线（原子切换；hosts 仍用 AboutVPS 配置）；**不是**下文 Vercel 双轨 |
 | 说说 | **已退役**（目录、路由、About 动态、CMS API 删除） |
 | 公网页 | 无音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
 | 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层；列表/归档为纯文本摘要 |
@@ -359,7 +359,7 @@ Vercel 默认会为你分配一个免费的二级域名：
 
 > **💡 黄金法则**：暂存队列 -> 更新本地 -> 同步Blog
 
-> **本 fork**：点 **同步 Blog** 会镜像到 `XHBlogs` 并自动执行 AboutVPS 远程静态部署（日志弹窗）；公网不是 Vercel。需要把源码推到 GitHub 时，在同一操作栏填写 commit message 后点 **git推送**（monorepo 根目录）。详见 [AboutVPS/04](../AboutVPS/04-静态展示站.md)。
+> **本 fork**：点 **同步 Blog** 会镜像到 `XHBlogs` 并自动执行 [`scripts/deploy-fallback-site-remote.sh`](scripts/deploy-fallback-site-remote.sh)（日志弹窗）；公网不是 Vercel。需要把源码推到 GitHub 时，在同一操作栏填写 commit message 后点 **git推送**（monorepo 根目录）。详见 [AboutVPS/04](../AboutVPS/04-静态展示站.md)。
 
 ---
 

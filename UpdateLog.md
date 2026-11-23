@@ -1,5 +1,6 @@
 ## Unreleased
 
+- **部署脚本迁入 monorepo**：`deploy-fallback-site-remote.sh` 从 AboutVPS 迁到 `scripts/`；控制台 `sync.py` 默认调用此处；AboutVPS 仅留转发 stub。
 - **正文 TOC / 外链**：`rehype-slug` 为标题生成 GFM ID，目录锚点可跳转；http(s) 外链新标签打开（`noopener noreferrer`）；侧栏 TOC 保留渲染 ID 不再覆盖。
 - **静态 fork（AboutVPS）**：公网以 `STATIC_EXPORT=1` 导出到 Reality 回落目录；运维见 `AboutVPS/04-静态展示站.md`。根 README 增加 fork 说明。部署脚本为 **rsync 增量**同步 `out/` + 远端原子切换（控制台「同步 Blog」共用）。
 - **说说退役**：删除 `moments/` 数据、`app/moments`、About 动态聚合、CMS `/api/moments` 与 sync 目录；编辑器与展示站均不可再访问。
@@ -8,7 +9,7 @@
 - **详情标签标题**：文章 / 杂谈详情页 `generateMetadata`，浏览器标签显示「篇名 | 站点名」。
 - **控制台窗口**：启动默认最大化；顶栏绿色按钮改为真正 maximize（不再 toggle 全屏）。
 - **保存转换**：HTML→MD 时先保护 `<code>`/`<pre>` 再识别公式，避免 `$ git` / `<code>$</code>` 被误当 KaTeX 撕坏表格。
-- **控制台上线**：去掉 GitHub/Vercel 双轨 UI；**同步 Blog** = 镜像 `XHBlogs` + 流式执行 AboutVPS 远程静态部署；操作栏支持 monorepo **git推送**；桌面/开始菜单「XHBlogs 控制台」快捷方式。
+- **控制台上线**：去掉 GitHub/Vercel 双轨 UI；**同步 Blog** = 镜像 `XHBlogs` + 流式执行远程静态部署（现位于 monorepo `scripts/`）；操作栏支持 monorepo **git推送**；桌面/开始菜单「XHBlogs 控制台」快捷方式。
 - **图床**：设置 → 图库支持 R2 **批量上传**；编辑器图床工作台仍单张上传。
 - **详情页**：控制台去掉 `MusicProvider` 后，文章/杂谈详情移除 `SidebarLyric`，避免 `useMusic` 崩溃。
 - 支持 Debian 自托管：`XHBlogs` 启用 Next.js `standalone`，新增 `deploy/` 构建与 rsync 脚本、systemd/nginx 模板与技术文档；根 README 增加自托管入口。推荐在 CachyOS 等 Linux 机构建，服务器只运行 Node + nginx（443/80 → `127.0.0.1:3000`）。**注意**：`deploy/` 为 Node standalone **备选**路径；当前 thirra.com 生产以 AboutVPS 静态回落为准。

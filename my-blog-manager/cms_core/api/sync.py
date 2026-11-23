@@ -13,7 +13,7 @@ CURRENT_API_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_API_DIR, "..", ".."))
 REPO_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, ".."))
 DEFAULT_DEPLOY_SCRIPT = os.path.abspath(
-    os.path.join(REPO_ROOT, "..", "AboutVPS", "scripts", "deploy-fallback-site-remote.sh")
+    os.path.join(REPO_ROOT, "scripts", "deploy-fallback-site-remote.sh")
 )
 
 SYNC_DIRS = ["posts", "chatters"]
@@ -72,9 +72,11 @@ def _ndjson(event: dict) -> str:
 
 
 def resolve_deploy_script() -> str:
-    env_path = os.environ.get("ABOUTVPS_DEPLOY_SCRIPT", "").strip()
-    if env_path and os.path.isfile(env_path):
-        return env_path
+    # Prefer XHBLOGS_DEPLOY_SCRIPT; ABOUTVPS_DEPLOY_SCRIPT kept as override alias.
+    for key in ("XHBLOGS_DEPLOY_SCRIPT", "ABOUTVPS_DEPLOY_SCRIPT"):
+        env_path = os.environ.get(key, "").strip()
+        if env_path and os.path.isfile(env_path):
+            return env_path
     if os.path.isfile(DEFAULT_DEPLOY_SCRIPT):
         return DEFAULT_DEPLOY_SCRIPT
     raise FileNotFoundError(f"找不到部署脚本: {DEFAULT_DEPLOY_SCRIPT}")
@@ -122,7 +124,7 @@ async def execute_sync(request: Request):
 
 @router.post("/publish-remote")
 async def publish_remote(request: Request):
-    """镜像到 XHBlogs，再流式执行 AboutVPS 远程静态部署。"""
+    """镜像到 XHBlogs，再流式执行 monorepo scripts/ 远程静态部署。"""
     payload = await request.json()
     target_path = (payload.get("blogPath") or "").strip()
 
