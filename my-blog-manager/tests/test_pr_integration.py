@@ -83,6 +83,28 @@ class ContentRoundtripTests(unittest.TestCase):
         self.assertIn('<sub>2</sub>', md)
         self.assertIn('<sup>2</sup>', md)
 
+    def test_shell_dollar_in_code_not_treated_as_math(self):
+        html = '<p><strong>从 <code>$</code> 之后开始。</strong></p><p><code>$ git init</code></p>'
+        md = editor_html_to_markdown(html)
+        self.assertNotIn('</code>', md)
+        self.assertNotIn('XHMATH', md)
+        self.assertIn('`$`', md)
+        self.assertIn('`$ git init`', md)
+
+    def test_shell_dollar_in_table_cells_not_torn(self):
+        html = (
+            '<table><thead><tr><th>说明</th><th>命令</th></tr></thead><tbody>'
+            '<tr><td>初始化</td><td><code>$ git init</code></td></tr>'
+            '<tr><td>克隆</td><td><code>$ git clone [url]</code></td></tr>'
+            '</tbody></table>'
+        )
+        md = editor_html_to_markdown(html)
+        self.assertNotIn('</td>', md)
+        self.assertNotIn('<table', md)
+        self.assertIn('`$ git init`', md)
+        self.assertIn('`$ git clone [url]`', md)
+        self.assertIn('|', md)
+
     def test_publish_and_reload_existing_article(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(drafts, 'PROJECT_ROOT', directory):
             post = Path(directory) / 'posts' / 'sample.md'

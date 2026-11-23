@@ -27,9 +27,13 @@ def markdown_to_editor_html(content):
 
 
 _DISPLAY_MATH_RE = re.compile(r'\$\$(.+?)\$\$', re.DOTALL)
-# Inline: single $...$ not part of $$
-_INLINE_MATH_RE = re.compile(r'(?<!\$)\$(?!\$)((?:\\.|[^$])+?)\$(?!\$)', re.DOTALL)
+# Inline $...$: not $$, not shell-like "$ git …", and never swallow HTML tags.
+_INLINE_MATH_RE = re.compile(
+    r'(?<!\$)\$(?![\s$])((?:\\.|[^$<>])+?)\$(?!\$)',
+    re.DOTALL,
+)
 _PRE_BLOCK_RE = re.compile(r'<pre\b[^>]*>.*?</pre>', re.IGNORECASE | re.DOTALL)
+_CODE_SPAN_RE = re.compile(r'<code\b[^>]*>.*?</code>', re.IGNORECASE | re.DOTALL)
 
 
 def _stash_math_segments(text: str, token_prefix: str) -> tuple[str, dict[str, str]]:
@@ -41,18 +45,20 @@ def _stash_math_segments(text: str, token_prefix: str) -> tuple[str, dict[str, s
         store[token] = match.group(0)
         return token
 
-    # Protect <pre> so code dollar signs are not treated as math.
-    pre_store: dict[str, str] = {}
+    # Protect <pre> and inline <code> so shell `$` / `$ git …` are not treated as math.
+    code_store: dict[str, str] = {}
 
-    def stash_pre(match: re.Match) -> str:
-        token = f'{token_prefix}PRE{len(pre_store)}END'
-        pre_store[token] = match.group(0)
+    def stash_code(match: re.Match, kind: str) -> str:
+        token = f'{token_prefix}{kind}{len(code_store)}END'
+        code_store[token] = match.group(0)
         return token
 
-    work = _PRE_BLOCK_RE.sub(stash_pre, text)
+    work = _PRE_BLOCK_RE.sub(lambda m: stash_code(m, 'PRE'), text)
+    work = _CODE_SPAN_RE.sub(lambda m: stash_code(m, 'CODE'), work)
     work = _DISPLAY_MATH_RE.sub(lambda m: stash(m, 'DMATH'), work)
     work = _INLINE_MATH_RE.sub(lambda m: stash(m, 'IMATH'), work)
-    for token, block in pre_store.items():
+    # Restore code/pre before markdownify so convert_pre / code spans work as before.
+    for token, block in code_store.items():
         work = work.replace(token, block)
     return work, store
 

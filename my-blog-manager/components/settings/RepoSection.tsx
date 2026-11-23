@@ -92,7 +92,7 @@ export default function RepoSection() {
             placeholder="/home/…/XinghuisamaBlogs/XHBlogs"
           />
           <p className="mt-3 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-            「同步 Blog」会把管理端内容镜像到此目录，再构建并上传到 VPS 静态回落站。
+            「同步 Blog」会把管理端内容镜像到此目录，再构建并以 rsync 增量同步到 VPS 静态回落站。
           </p>
         </div>
 

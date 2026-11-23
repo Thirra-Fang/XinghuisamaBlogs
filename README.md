@@ -21,7 +21,7 @@
 
 | 项 | 本 fork |
 |----|---------|
-| 公网形态 | `STATIC_EXPORT` + AboutVPS **全量 tar** 上线（非增量 rsync）；**不是**下文 Vercel 双轨 |
+| 公网形态 | `STATIC_EXPORT` + AboutVPS **rsync 增量**上线（原子切换）；**不是**下文 Vercel 双轨 |
 | 说说 | **已退役**（目录、路由、About 动态、CMS API 删除） |
 | 公网页 | 无音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
 | 杂谈列表 | grid + 实色卡片；`/chatter` 不用 PageTransition 包一层；列表/归档为纯文本摘要 |
@@ -365,7 +365,7 @@ Vercel 默认会为你分配一个免费的二级域名：
 
 ## 三、如何推送你的修改到线上网页？
 
-**本 fork（thirra.com）**：更新本地 → **同步 Blog** 即可上线（构建 + 全量 tar 到 VPS）。无需「仅同步源码 / Vercel」。
+**本 fork（thirra.com）**：更新本地 → **同步 Blog** 即可上线（构建 + rsync 增量到 VPS）。无需「仅同步源码 / Vercel」。
 
 **上游默认路径（Vercel 双轨）**：同步 Blog 后打开设置里的双轨部署，点「仅同步源码」，等 Vercel 构建。下列截图与步骤针对上游；本 fork 已去掉该 UI。
 

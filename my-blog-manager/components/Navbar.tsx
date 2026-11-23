@@ -417,8 +417,8 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
                 将管理端数据覆盖到<br />
                 <span className="font-bold text-amber-500 break-all">{targetBlogPath}</span>
                 <br />
-                然后执行静态构建并上传到远端服务器。
-                <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">会清空目标站旧文章/配置，构建与上传可能需要数分钟。</span>
+                然后静态构建，并以 rsync 增量同步到远端（staging 后原子切换）。
+                <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">会清空目标站旧文章/配置；构建仍可能较久，上传仅传变更。</span>
               </p>
               <div className="flex gap-3">
                 <button onClick={() => setSyncModalOpen(false)} className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-xs font-black uppercase transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">取消</button>

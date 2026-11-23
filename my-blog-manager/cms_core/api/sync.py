@@ -144,7 +144,7 @@ async def publish_remote(request: Request):
                 yield _ndjson({"type": "error", "message": f"镜像失败: {e}"})
                 return
             yield _ndjson({"type": "log", "line": "镜像完成"})
-            yield _ndjson({"type": "phase", "phase": "deploy", "message": "开始构建并上传到 VPS…"})
+            yield _ndjson({"type": "phase", "phase": "deploy", "message": "开始构建并以 rsync 增量同步到 VPS…"})
 
             try:
                 script = resolve_deploy_script()

@@ -11,7 +11,7 @@ STATIC_EXPORT=1   # 由 npm run build:static / 脚本设置
 npm run build:static   # 产物 out/
 # 再跑旁路 AboutVPS：
 #   scripts/deploy-fallback-site-remote.sh
-# 将完整 out/ 以 tar 全量上传到各机 /var/www/reality-fallback（非增量 rsync）
+# 将 out/ 以 rsync 增量同步到各机 /var/www/reality-fallback（原子切换）
 ```
 
 运维、R2 图床、fork 差异见 **[AboutVPS/04-静态展示站.md](../../AboutVPS/04-静态展示站.md)**。

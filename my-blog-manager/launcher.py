@@ -76,7 +76,7 @@ class WindowAPI:
         webview.windows[0].resize(int(width), int(height))
         return True
     def minimize_window(self): webview.windows[0].minimize()
-    def maximize_window(self): webview.windows[0].toggle_fullscreen()
+    def maximize_window(self): webview.windows[0].maximize()
     def close_window(self): webview.windows[0].destroy()
 
 def run_api(port):
@@ -99,8 +99,7 @@ def stop_frontend():
         frontend_process.terminate()
 
 def on_shown():
-    win_size = load_window_size()
-    webview.windows[0].resize(int(win_size["width"]), int(win_size["height"]))
+    webview.windows[0].maximize()
 
 def main():
     global frontend_process
@@ -151,6 +150,7 @@ def main():
         title='星辉云端·控制台',
         url=window_url,
         width=1440, height=900, min_size=(1024, 768),
+        maximized=True,
         background_color='#0f172a', resizable=True, frameless=True, easy_drag=False, js_api=api
     )
 
