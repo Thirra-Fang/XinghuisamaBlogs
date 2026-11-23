@@ -2,17 +2,17 @@
 
 export const siteConfig = {
   // 1. 网站标题与博主信息
-  title: "Thirra の 自我同一性",
+  title: "契拉 @ Thirra",
   faviconUrl: "https://img.thirra.com/blog/2026/11/21/150fd8f0b3be-forehead-mark-logo.png",
   authorName: "Thirra",
   bio: "微光透过薄暮，给你走遍黑暗的理由。\nShimmering light through the twilight‚ search the darkness by your side․",
 
-  navTitle: "Thirra",
+  navTitle: "契拉",
 
   // 👇 【新增】导航栏中间的那个后缀/分隔符（默认是 の）
-  navSuffix: "の",
+  navSuffix: "@",
 
-  navAfter: "自我同一性",
+  navAfter: "Thirra",
 
   // 2. 头像设置 (支持网络链接，或将图片放入 public 文件夹后使用 "/me.jpg")
   avatarUrl: "https://img.thirra.com/imageQcut.png",

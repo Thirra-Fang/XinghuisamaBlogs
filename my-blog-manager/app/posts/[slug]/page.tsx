@@ -28,6 +28,17 @@ export async function generateStaticParams() {
     }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const fullPath = path.join(process.cwd(), 'posts', `${slug}.md`);
+  if (!fs.existsSync(fullPath)) {
+    return { title: siteConfig.title };
+  }
+  const { data } = matter(fs.readFileSync(fullPath, 'utf8'));
+  const name = data.title || '无标题';
+  return { title: `${name} | ${siteConfig.title}` };
+}
+
 function extractToc(content: string) {
   const toc = [];
   let fence: { marker: string; length: number } | null = null;

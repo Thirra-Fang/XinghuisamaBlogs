@@ -4,6 +4,7 @@
 - **说说退役**：删除 `moments/` 数据、`app/moments`、About 动态聚合、CMS `/api/moments` 与 sync 目录；编辑器与展示站均不可再访问。
 - **杂谈展示**：列表改为 CSS grid、卡片去 `backdrop-blur`；`/chatter` 去掉 PageTransition；去掉全局 `backdrop-blur` 永久 `will-change`，修复编辑器 WebKit 下悬停才显示。
 - **Markdown 公式**：CMS 保存时保护 `$...$` / `$$...$$`，避免下标 `_` 被转义；管理端详情复用 `renderMarkdown`；杂谈列表与归档卡片用纯文本摘要（公式显示为 `[公式]`）。
+- **详情标签标题**：文章 / 杂谈详情页 `generateMetadata`，浏览器标签显示「篇名 | 站点名」。
 - **控制台上线**：去掉 GitHub/Vercel 双轨 UI；**同步 Blog** = 镜像 `XHBlogs` + 流式执行 AboutVPS 远程静态部署；操作栏支持 monorepo **git推送**；桌面/开始菜单「XHBlogs 控制台」快捷方式。
 - **图床**：设置 → 图库支持 R2 **批量上传**；编辑器图床工作台仍单张上传。
 - **详情页**：控制台去掉 `MusicProvider` 后，文章/杂谈详情移除 `SidebarLyric`，避免 `useMusic` 崩溃。

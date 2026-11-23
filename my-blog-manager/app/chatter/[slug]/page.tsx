@@ -26,6 +26,17 @@ export async function generateStaticParams() {
     }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const fullPath = path.join(process.cwd(), 'chatters', `${slug}.md`);
+  if (!fs.existsSync(fullPath)) {
+    return { title: siteConfig.title };
+  }
+  const { data } = matter(fs.readFileSync(fullPath, 'utf8'));
+  const name = data.title || '碎片记录';
+  return { title: `${name} | ${siteConfig.title}` };
+}
+
 async function getChatterData(slug: string) {
   const fullPath = path.join(process.cwd(), 'chatters', `${slug}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
