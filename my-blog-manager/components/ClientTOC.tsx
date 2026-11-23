@@ -7,40 +7,31 @@ type TocItem = {
   id: string;
 };
 
-// 🌟 核心增幅：终极 Markdown 净化器！
 // 专门用来扒掉诸如 [链接名字](https://...) 的外壳，只留下 "链接名字"
 const cleanMarkdownHeading = (rawText: string) => {
   if (!rawText) return '';
   return rawText
-    // 1. 提取超链接中的文本内容：[我的标题](https://...) -> 我的标题
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    // 2. 去除 Markdown 图片：![图片](URL) -> 图片
     .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
-    // 3. 兜底防御：去除可能混入的 HTML 标签
     .replace(/<\/?[^>]+(>|$)/g, '')
-    // 4. 去除加粗、斜体、删除线、行内代码符号等
     .replace(/[*_~`#]/g, '')
     .trim();
 };
 
-// 🌟 底层 ID 净化器
+// Fallback only when the rendered heading has no id from rehype-slug.
 const getSafeId = (rawText: string) => {
-  // 先把超链接外壳扒掉，得到纯文本
   const cleanText = cleanMarkdownHeading(rawText);
-  // 再杀掉所有标点、空格，只保留汉字、字母和数字生成绝对安全的 ID
   return 'toc-' + cleanText
     .replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')
     .toLowerCase();
 };
 
-// 🌟 侧边栏视觉净化器
-const getDisplayText = (rawText: string) => {
-  // 直接调用终极净化器，展示纯洁无瑕的标题名！
-  return cleanMarkdownHeading(rawText);
-};
+const getDisplayText = (rawText: string) => cleanMarkdownHeading(rawText);
 
 export default function ClientTOC({ toc }: { toc: TocItem[] }) {
   const [activeId, setActiveId] = useState<string>("");
+  // Real DOM ids aligned by heading order with the toc array.
+  const [headingIds, setHeadingIds] = useState<string[]>([]);
 
   useEffect(() => {
     const contentDiv = document.getElementById('article-content');
@@ -48,12 +39,14 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
 
     const headings = Array.from(contentDiv.querySelectorAll('h1, h2, h3'));
 
-    // 🌟 强制统一正文 ID
-    headings.forEach((heading) => {
-      // heading.textContent 拿到的是渲染后的纯文字（已经没有超链接语法了）
-      // 再过一遍 getSafeId，确保正文和侧边栏的 ID 100% 对齐！
-      heading.id = getSafeId(heading.textContent || '');
+    // Keep rehype-slug + sanitize ids (user-content-…); only fill gaps.
+    const ids = headings.map((heading) => {
+      if (!heading.id) {
+        heading.id = getSafeId(heading.textContent || '');
+      }
+      return heading.id;
     });
+    setHeadingIds(ids);
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -80,7 +73,6 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
   }, [toc]);
 
   const scrollToHeading = (e: React.MouseEvent, id: string) => {
-    // 🌟 防止任何超链接的意外默认行为
     e.preventDefault();
 
     const targetElement = document.getElementById(id);
@@ -129,11 +121,9 @@ export default function ClientTOC({ toc }: { toc: TocItem[] }) {
         <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-slate-200 dark:bg-slate-700/50 rounded-full"></div>
 
         {toc.map((item, index) => {
-          // 视觉上：扒掉超链接，完美展示 "3.万度"
           const displayText = getDisplayText(item.text);
-
-          // 底层跳转：生成纯净版的 ID "toc-3万度"，绝对不会找错目标！
-          const safeId = getSafeId(item.text);
+          // Prefer DOM id by order; fall back until effect runs.
+          const safeId = headingIds[index] || getSafeId(item.text);
           const isActive = activeId === safeId;
 
           return (

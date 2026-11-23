@@ -33,10 +33,43 @@ test('preserves safe line breaks, links, GFM, math and highlighted code', async 
   const html = await renderMarkdown('First\n\n<br><br>\n\nSecond\n\n[link](https://example.com)\n\n~~gone~~\n\n$x^2$\n\n$$\ny=1\n$$\n\n```javascript\nconst x = 1;\n```');
   assert.match(html, /<br><br>/);
   assert.match(html, /href="https:\/\/example\.com"/);
+  assert.match(html, /target="_blank"/);
+  assert.match(html, /rel="noopener noreferrer"/);
   assert.match(html, /<del>gone<\/del>/);
   assert.match(html, /class="katex"/);
   assert.match(html, /class="katex-display"/);
   assert.match(html, /hljs-keyword/);
+});
+
+test('GFM heading slugs enable in-document TOC fragment links', async () => {
+  const html = await renderMarkdown([
+    '- [一、Git 命令手册](#一git-命令手册)',
+    '- [Hello World](#hello-world)',
+    '',
+    '## 一、Git 命令手册',
+    '',
+    '## Hello World',
+  ].join('\n'));
+  assert.match(html, /id="user-content-一git-命令手册"/);
+  assert.match(html, /href="#user-content-%E4%B8%80git-%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C"/);
+  assert.match(html, /id="user-content-hello-world"/);
+  assert.match(html, /href="#user-content-hello-world"/);
+});
+
+test('opens absolute http(s) links in a new tab but not anchors or site paths', async () => {
+  const html = await renderMarkdown([
+    '[外链](https://example.com)',
+    '[协议相对](//cdn.example.com/x)',
+    '[锚点](#hello-world)',
+    '[站内](/posts/x)',
+    '## Hello World',
+  ].join('\n\n'));
+  assert.match(html, /href="https:\/\/example\.com"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+  assert.match(html, /href="\/\/cdn\.example\.com\/x"[^>]*target="_blank"/);
+  assert.match(html, /href="#user-content-hello-world"/);
+  assert.doesNotMatch(html, /href="#user-content-hello-world"[^>]*target="_blank"/);
+  assert.match(html, /href="\/posts\/x"/);
+  assert.doesNotMatch(html, /href="\/posts\/x"[^>]*target="_blank"/);
 });
 
 test('GFM footnote forward and back links still target sanitized IDs', async () => {

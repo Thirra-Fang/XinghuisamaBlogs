@@ -1,5 +1,6 @@
 ## Unreleased
 
+- **正文 TOC / 外链**：`rehype-slug` 为标题生成 GFM ID，目录锚点可跳转；http(s) 外链新标签打开（`noopener noreferrer`）；侧栏 TOC 保留渲染 ID 不再覆盖。
 - **静态 fork（AboutVPS）**：公网以 `STATIC_EXPORT=1` 导出到 Reality 回落目录；运维见 `AboutVPS/04-静态展示站.md`。根 README 增加 fork 说明。部署脚本为 **rsync 增量**同步 `out/` + 远端原子切换（控制台「同步 Blog」共用）。
 - **说说退役**：删除 `moments/` 数据、`app/moments`、About 动态聚合、CMS `/api/moments` 与 sync 目录；编辑器与展示站均不可再访问。
 - **杂谈展示**：列表改为 CSS grid、卡片去 `backdrop-blur`；`/chatter` 去掉 PageTransition；去掉全局 `backdrop-blur` 永久 `will-change`，修复编辑器 WebKit 下悬停才显示。

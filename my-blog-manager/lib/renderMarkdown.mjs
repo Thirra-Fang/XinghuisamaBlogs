@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -57,6 +58,24 @@ function fixFragmentLinks() {
   };
 }
 
+// Open absolute http(s) links in a new tab (same as friends/projects).
+// Applied after sanitize so target/rel are not stripped.
+function openExternalLinks() {
+  return (tree) => {
+    function visit(node) {
+      if (node.type === 'element' && node.tagName === 'a') {
+        const href = node.properties?.href;
+        if (typeof href === 'string' && /^(https?:)?\/\//i.test(href)) {
+          node.properties.target = '_blank';
+          node.properties.rel = ['noopener', 'noreferrer'];
+        }
+      }
+      if (node.children) node.children.forEach(visit);
+    }
+    visit(tree);
+  };
+}
+
 export async function renderMarkdown(content) {
   const processed = await unified()
     .use(remarkParse)
@@ -64,8 +83,10 @@ export async function renderMarkdown(content) {
     .use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(rehypeSlug)
     .use(rehypeSanitize, schema)
     .use(fixFragmentLinks)
+    .use(openExternalLinks)
     .use(rehypeHighlight, {
       detect: true,
       ignoreMissing: true,
