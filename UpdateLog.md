@@ -1,6 +1,7 @@
 ## Unreleased
 
-- **部署脚本迁入 monorepo**：`deploy-fallback-site-remote.sh` 从 AboutVPS 迁到 `scripts/`；控制台 `sync.py` 默认调用此处；AboutVPS 仅留转发 stub。
+- **返回上一级**：文章 / 杂谈详情固定回到归档、杂谈列表（不再 `history.back`）；项目与友链页去掉该按钮；移动端悬浮返回仅在详情页出现。
+- **部署脚本迁入 monorepo**：`deploy-fallback-site-remote.sh` 从 AboutVPS 迁到 `XinghuisamaBlogs/scripts/`；控制台 `sync.py` 默认调用此处；AboutVPS 旧路径已删除。
 - **正文 TOC / 外链**：`rehype-slug` 为标题生成 GFM ID，目录锚点可跳转；http(s) 外链新标签打开（`noopener noreferrer`）；侧栏 TOC 保留渲染 ID 不再覆盖。
 - **静态 fork（AboutVPS）**：公网以 `STATIC_EXPORT=1` 导出到 Reality 回落目录；运维见 `AboutVPS/04-静态展示站.md`。根 README 增加 fork 说明。部署脚本为 **rsync 增量**同步 `out/` + 远端原子切换（控制台「同步 Blog」共用）。
 - **说说退役**：删除 `moments/` 数据、`app/moments`、About 动态聚合、CMS `/api/moments` 与 sync 目录；编辑器与展示站均不可再访问。

@@ -147,7 +147,7 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
             )}
 
             <div className="p-5 md:p-14 relative">
-              <BackButton />
+              <BackButton href="/chatter" />
 
               <header className="mb-6 md:mb-10 border-b border-slate-300/30 dark:border-slate-700/50 pb-5 md:pb-8 relative">
                 <h1 className="text-2xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 md:mb-6 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug md:leading-tight">

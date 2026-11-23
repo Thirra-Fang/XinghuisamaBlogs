@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import BackButton from '../../components/BackButton';
 import { projectsData as initialProjects, Project } from '../../data/projects';
 import { Plus, Pencil, Trash2, AlertTriangle, Save, Edit3, X, Sparkles, Code2 } from 'lucide-react';
 import { useOperations } from '../../context/OperationContext';
@@ -131,7 +130,6 @@ export default function ProjectsBoard() {
 
       {/* 顶部标题区 */}
       <div className="mb-8 flex flex-col items-center md:items-start">
-        <div className="w-full flex justify-start mb-6"><BackButton /></div>
         <div className="text-center md:text-left w-full">
           <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-widest uppercase">Projects Matrix</h1>
           <p className="text-slate-600 dark:text-slate-400 font-serif italic opacity-80 flex items-center justify-center md:justify-start gap-2">

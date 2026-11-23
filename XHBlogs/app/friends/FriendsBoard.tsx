@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import BackButton from '../../components/BackButton';
 import { friendsData } from '../../data/friends';
 
 const containerVariants = {
@@ -21,11 +20,8 @@ export default function FriendsBoard() {
   return (
     <div className="w-full max-w-5xl mx-auto px-3 sm:px-10 py-6 md:py-10 relative z-10 scroll-smooth mt-20 md:mt-10">
 
-      {/* 顶部导航与标题 */}
+      {/* 顶部标题 */}
       <div className="mb-8 md:mb-12 flex flex-col items-center md:items-start">
-        <div className="w-full flex justify-start mb-4 md:mb-6">
-          <BackButton />
-        </div>
         <div className="text-center md:text-left w-full px-2 md:px-0">
           <h1 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-widest drop-shadow-sm uppercase">
             云端引力
