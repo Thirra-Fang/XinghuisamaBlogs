@@ -13,3 +13,5 @@ When changing site features, console parity, picbed, or deploy behavior for this
 3. Add a bullet under [`UpdateLog.md`](../UpdateLog.md) Unreleased.
 
 Do not ship code-only changes that leave those docs stale. Production deploy uses incremental rsync of `out/` via monorepo [`scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh) (staging then atomic swap; hosts from `~/.config/AboutVPS/hosts.conf`); the console **同步 Blog** invokes that script. No Vercel dual-track in this fork.
+
+Public chatter list uses columns + glass + framer enter/exit (no `PageTransition` wrapper). Manager chatter list stays grid + solid cards. Archive `/timeline` is matrix-grid only (no hub-chain / view toggle). Projects use `url` + `linkType` (`github` | `pan`).

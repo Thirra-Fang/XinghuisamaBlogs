@@ -1,5 +1,9 @@
 ## Unreleased
 
+- **归档排版**：去掉「中枢链路」与视图切换滑块，仅保留矩阵网格；标签栏占满玻璃框。
+- **项目链接类型**：`githubUrl` 重命名为通用 `url`；新增 `linkType: github | pan`；网盘用原图轮廓 `pan-drive.png` mask 图标（不反相）；控制台可切换类型。文档（AboutVPS `04`、README）同步校准。
+- **控制台杂谈列表**：去掉瀑布流 / 进出场动画与卡片 `backdrop-blur`，改回 grid + 实色卡，避免 WebKit 显示不全；展示站动画保留。
+- **杂谈动画 / 首页简介**：杂谈列表恢复 CSS columns 瀑布流、玻璃卡片与 framer-motion 进出场（仍不包 PageTransition）；首页自我介绍去掉 `max-w-md`、加 `whitespace-pre-line` 以撑满并显示换行。
 - **返回上一级**：文章 / 杂谈详情固定回到归档、杂谈列表（不再 `history.back`）；项目与友链页去掉该按钮；移动端悬浮返回仅在详情页出现。
 - **部署脚本迁入 monorepo**：`deploy-fallback-site-remote.sh` 从 AboutVPS 迁到 `XinghuisamaBlogs/scripts/`；控制台 `sync.py` 默认调用此处；AboutVPS 旧路径已删除。
 - **正文 TOC / 外链**：`rehype-slug` 为标题生成 GFM ID，目录锚点可跳转；http(s) 外链新标签打开（`noopener noreferrer`）；侧栏 TOC 保留渲染 ID 不再覆盖。

@@ -12,4 +12,4 @@ When changing console UI, settings, picbed, sync, or preview parity with the sta
 2. Update repo root [`README.md`](../README.md) fork notes if user-facing.
 3. Add a bullet under [`UpdateLog.md`](../UpdateLog.md) Unreleased.
 
-Keep manager and `XHBlogs` behavior documented together. No `MusicProvider` / no detail `SidebarLyric` in this fork; R2 batch upload lives under Settings → 图库. No GitHub/Vercel dual-track UI; **同步 Blog** = mirror + [`scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh) (incremental rsync); ops **git推送** = monorepo root only.
+Keep manager and `XHBlogs` behavior documented together. No `MusicProvider` / no detail `SidebarLyric` in this fork; R2 batch upload lives under Settings → 图库. No GitHub/Vercel dual-track UI; **同步 Blog** = mirror + [`scripts/deploy-fallback-site-remote.sh`](../scripts/deploy-fallback-site-remote.sh) (incremental rsync); ops **git推送** = monorepo root only. Manager chatter list: grid + solid (no columns/list framer) for WebKit; public site keeps waterfall animation. Archive `/timeline`: matrix grid only (no hub-chain). Projects: `url` + `linkType` (`github` | `pan`), not `githubUrl`.

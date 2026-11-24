@@ -5,15 +5,29 @@ export type Project = {
   name: string;
   description: string;
   icon: string;
-  githubUrl: string;
+  url: string;
+  linkType: 'github' | 'pan';
   tags: string[];
 };
 
 export const projectsData: Project[] = [
   {
+    "id": "proj_1795440801771",
+    "name": "一些过往的游戏作品集",
+    "url": "https://pan.baidu.com/s/1MAU4sEhnyS_ygmo49JKdnw?pwd=af82",
+    "linkType": "pan",
+    "description": "还在学校的memo游戏工作室时和同学一起做的一些小游戏项目",
+    "icon": "🎮",
+    "tags": [
+      "Unity",
+      "C#"
+    ]
+  },
+  {
     "id": "proj_1795285743857",
     "name": "modelica-preview",
-    "githubUrl": "https://github.com/Thirra-Fang/modelica-preview",
+    "url": "https://github.com/Thirra-Fang/modelica-preview",
+    "linkType": "github",
     "description": "在 Visual Studio Code 中打开 Modelica（.mo） 文件时，根据源码里的 annotation（如 Placement、connect 的 Line、类级别的 Diagram / Icon 等）渲染示意图预览，便于对照图形与文本。",
     "icon": "🚀",
     "tags": [
@@ -25,7 +39,8 @@ export const projectsData: Project[] = [
   {
     "id": "proj_1795285394879",
     "name": "XinghuisamaBlogs",
-    "githubUrl": "https://github.com/Thirra-Fang/XinghuisamaBlogs",
+    "url": "https://github.com/Thirra-Fang/XinghuisamaBlogs",
+    "linkType": "github",
     "description": "原作者：XingHuiSama\n这是一个采用 Next.js 构建的高颜值、毛玻璃（Glassmorphism）风格个人博客系统",
     "icon": "🚀",
     "tags": [

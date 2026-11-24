@@ -4,7 +4,7 @@ import ProjectsBoard from './ProjectsBoard';
 
 export const metadata = {
   title: "项目矩阵 | XingHuiSama の 博客",
-  description: "开源项目与代码仓库展示",
+  description: "开源项目、代码仓库和作品集展示",
 };
 
 export default function ProjectsPage() {

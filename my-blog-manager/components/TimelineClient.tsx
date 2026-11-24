@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import TimelineNode from './TimelineNode';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, AlertTriangle, Sparkles, LayoutGrid, ListTree, Calendar, Hash, ArrowRight, Edit3, ArrowUp } from 'lucide-react';
+import { Plus, Search, AlertTriangle, Sparkles, Edit3, ArrowUp } from 'lucide-react';
 import { useToast } from './ToastProvider';
 import Link from 'next/link';
 
@@ -12,9 +11,6 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
   const [selectedTag, setSelectedTag] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // 🌟 核心状态：视图模式 ('timeline' | 'card')
-  const [viewMode, setViewMode] = useState<'timeline' | 'card'>('timeline');
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -99,7 +95,6 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
   return (
     <div className="w-full max-w-5xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
 
-      {/* 💎 统一的销毁确认弹窗 */}
       <AnimatePresence>
         {deleteModal.isOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -125,7 +120,6 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
         </p>
       </div>
 
-      {/* 🌟 搜索与控制面板 */}
       <div className="flex flex-col items-center gap-8 mb-16 relative z-[99]">
         <div className="relative w-full max-w-lg group" ref={searchContainerRef}>
           <input
@@ -183,8 +177,8 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
           </AnimatePresence>
         </div>
 
-        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
-          <div className="flex flex-wrap justify-center md:justify-start gap-2 flex-1">
+        <div className="w-full bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
+          <div className="flex flex-wrap justify-center md:justify-start gap-2 w-full">
             <button onClick={() => setSelectedTag('All')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${selectedTag === 'All' ? 'bg-indigo-500 text-white shadow-md' : 'bg-white/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-white'}`}>
               全部档案
             </button>
@@ -194,184 +188,105 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
               </button>
             ))}
           </div>
-
-          <div className="flex bg-white/50 dark:bg-slate-900/50 p-1 rounded-2xl shadow-inner shrink-0">
-            <button onClick={() => setViewMode('timeline')} className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 ${viewMode === 'timeline' ? 'bg-white dark:bg-slate-700 text-indigo-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
-              <ListTree size={16} />
-              <span className="hidden sm:inline">中枢链路</span>
-            </button>
-            <button onClick={() => setViewMode('card')} className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 ${viewMode === 'card' ? 'bg-white dark:bg-slate-700 text-indigo-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
-              <LayoutGrid size={16} />
-              <span className="hidden sm:inline">矩阵网格</span>
-            </button>
-          </div>
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
+      <div className="relative w-full">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .cyber-scrollbar::-webkit-scrollbar {
+            width: 12px;
+          }
+          .cyber-scrollbar::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 12px;
+            margin-top: 20px;
+            margin-bottom: 56px;
+          }
+          .cyber-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #818cf8 0%, #c084fc 100%);
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+          }
+          .cyber-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #6366f1 0%, #a855f7 100%);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+          }
+          .fade-edges {
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+          }
+        `}} />
 
-        {/* ================= 模式 1：网格卡片流 ================= */}
-        {viewMode === 'card' && (
-          <motion.div
-            key="card-view"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="relative w-full"
-          >
-            <style dangerouslySetInnerHTML={{ __html: `
-              .cyber-scrollbar::-webkit-scrollbar {
-                width: 12px; 
-              }
-              .cyber-scrollbar::-webkit-scrollbar-track {
-                background: rgba(99, 102, 241, 0.05);
-                border-radius: 12px;
-                margin-top: 20px;
-                margin-bottom: 56px; 
-              }
-              .cyber-scrollbar::-webkit-scrollbar-thumb {
-                background: linear-gradient(180deg, #818cf8 0%, #c084fc 100%);
-                border-radius: 12px;
-                border: 2px solid transparent;
-                background-clip: padding-box;
-              }
-              .cyber-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: linear-gradient(180deg, #6366f1 0%, #a855f7 100%);
-                border: 2px solid transparent;
-                background-clip: padding-box;
-              }
-              .fade-edges {
-                -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
-                mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
-              }
-            `}} />
+        <div
+          ref={gridScrollRef}
+          onScroll={handleGridScroll}
+          className="h-[75vh] overflow-y-auto cyber-scrollbar pr-5 pb-10 fade-edges"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 pb-10">
 
-            <div
-              ref={gridScrollRef}
-              onScroll={handleGridScroll}
-              className="h-[75vh] overflow-y-auto cyber-scrollbar pr-5 pb-10 fade-edges"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 pb-10">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
+              <Link href="/editor?id=new&type=post" className="group flex flex-col items-center justify-center h-full min-h-[300px] rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-500">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-md mb-4">
+                  <Plus size={24} />
+                </div>
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-indigo-500 transition-colors">撰写新研究</span>
+              </Link>
+            </motion.div>
 
-                {/* 新建卡片 */}
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-                  <Link href="/editor?id=new&type=post" className="group flex flex-col items-center justify-center h-full min-h-[300px] rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-500">
-                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-md mb-4">
-                      <Plus size={24} />
+            {timelinePosts.map((post, idx) => (
+              <motion.div key={post.slug} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: idx * 0.05 }}>
+                <div className="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl overflow-hidden shadow-lg flex flex-col h-full group relative">
+
+                  <Link href={`/posts/${post.slug}`} className="block flex-1 flex flex-col cursor-pointer">
+                    <div className="relative h-40 overflow-hidden">
+                      <img src={post.cover} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <span className="absolute bottom-3 left-4 text-white/90 text-xs font-mono font-bold bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md">
+                        {post.date.split(' ')[0]}
+                      </span>
                     </div>
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-indigo-500 transition-colors">撰写新研究</span>
-                  </Link>
-                </motion.div>
-
-                {/* 渲染卡片 */}
-                {timelinePosts.map((post, idx) => (
-                  <motion.div key={post.slug} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: idx * 0.05 }}>
-                    <div className="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl overflow-hidden shadow-lg flex flex-col h-full group relative">
-
-                      {/* 🌟 核心修正：点击卡片主体，跳转到前台阅读页面 (/posts/xxx) */}
-                      <Link href={`/posts/${post.slug}`} className="block flex-1 flex flex-col cursor-pointer">
-                        <div className="relative h-40 overflow-hidden">
-                          <img src={post.cover} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                          <span className="absolute bottom-3 left-4 text-white/90 text-xs font-mono font-bold bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md">
-                            {post.date.split(' ')[0]}
-                          </span>
-                        </div>
-                        <div className="p-5 flex-1 flex flex-col">
-                          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 line-clamp-2 transition-colors group-hover:text-indigo-500">{post.title}</h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 flex-1">{post.description || "没有描述..."}</p>
-                          <div className="flex flex-wrap gap-2 mt-auto">
-                            {post.tags.map((tag: string) => (
-                              <span key={tag} className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-1 rounded-md">#{tag}</span>
-                            ))}
-                          </div>
-                        </div>
-                      </Link>
-
-                      {/* 🌟 核心修正：独立于 Link 之外的绝对定位按钮区，互不干扰！ */}
-                      <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                        {/* 真正的编辑按钮，指向 /editor */}
-                        <Link href={`/editor?id=${post.slug}&type=post`} className="p-2 bg-indigo-500/90 backdrop-blur-md text-white rounded-xl hover:bg-indigo-600 hover:scale-110 shadow-lg shadow-indigo-500/30 transition-all cursor-pointer">
-                          <Edit3 size={16} />
-                        </Link>
-                        {/* 物理销毁按钮 */}
-                        <button onClick={(e) => { e.preventDefault(); setDeleteModal({ isOpen: true, slug: post.slug, title: post.title }); }} className="p-2 bg-red-500/90 backdrop-blur-md text-white rounded-xl hover:bg-red-600 hover:scale-110 shadow-lg shadow-red-500/30 transition-all cursor-pointer">
-                          <AlertTriangle size={16} />
-                        </button>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 line-clamp-2 transition-colors group-hover:text-indigo-500">{post.title}</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 flex-1">{post.description || "没有描述..."}</p>
+                      <div className="flex flex-wrap gap-2 mt-auto">
+                        {post.tags.map((tag: string) => (
+                          <span key={tag} className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-1 rounded-md">#{tag}</span>
+                        ))}
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+                  </Link>
 
-            {/* 火箭按钮：完美补位 */}
-            <AnimatePresence>
-              {showScrollTop && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.5, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.5, y: 10 }}
-                  onClick={scrollToTop}
-                  className="absolute bottom-4 -right-3 w-9 h-9 flex items-center justify-center bg-gradient-to-t from-purple-500 to-indigo-500 text-white rounded-full shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:-translate-y-1 transition-all z-50 group pointer-events-auto"
-                  title="回到顶部"
-                >
-                  <ArrowUp size={18} className="group-hover:-translate-y-1 transition-transform" />
-                </motion.button>
-              )}
-            </AnimatePresence>
-
-          </motion.div>
-        )}
-
-        {/* ================= 模式 2：传统时间线 ================= */}
-        {viewMode === 'timeline' && (
-          <motion.div
-            key="timeline-view"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="relative overflow-hidden p-2 md:p-10 min-h-[500px]"
-          >
-            <div className="absolute border-opacity-20 border-indigo-500 dark:border-indigo-400/20 h-full border-2 left-1/2 transform -translate-x-1/2 rounded-full transition-colors duration-1000"></div>
-
-            <div className="relative z-10 flex flex-col gap-16">
-              <div className="flex justify-between items-center w-full md:flex-row">
-                 <div className="order-1 w-5/12 hidden md:block"></div>
-                 <div className="z-20 flex items-center justify-center order-1 bg-white dark:bg-slate-900 shadow-xl w-6 h-6 rounded-full border-4 border-dashed border-indigo-400 animate-spin-slow"></div>
-                 <div className="order-1 w-full md:w-5/12">
-                    <Link href="/editor?id=new&type=post" className="group flex flex-col items-center justify-center min-h-[160px] rounded-[32px] border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/20 dark:bg-slate-800/20 hover:border-indigo-500 hover:bg-indigo-500/5 transition-all duration-500 relative overflow-hidden">
-                        <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-md relative z-10">
-                            <Plus size={24} />
-                        </div>
-                        <span className="mt-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-indigo-500 transition-colors relative z-10">撰写新研究...</span>
+                  <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                    <Link href={`/editor?id=${post.slug}&type=post`} className="p-2 bg-indigo-500/90 backdrop-blur-md text-white rounded-xl hover:bg-indigo-600 hover:scale-110 shadow-lg shadow-indigo-500/30 transition-all cursor-pointer">
+                      <Edit3 size={16} />
                     </Link>
-                 </div>
-              </div>
+                    <button onClick={(e) => { e.preventDefault(); setDeleteModal({ isOpen: true, slug: post.slug, title: post.title }); }} className="p-2 bg-red-500/90 backdrop-blur-md text-white rounded-xl hover:bg-red-600 hover:scale-110 shadow-lg shadow-red-500/30 transition-all cursor-pointer">
+                      <AlertTriangle size={16} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
-              <AnimatePresence mode='popLayout'>
-                {timelinePosts.map((post, index) => (
-                  <TimelineNode
-                    key={post.slug}
-                    post={post}
-                    index={index + 1}
-                    onDelete={(slug, title) => setDeleteModal({ isOpen: true, slug, title })}
-                  />
-                ))}
-              </AnimatePresence>
-
-              {timelinePosts.length === 0 && (
-                 <div className="text-center py-20 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-sm">
-                    这个频段没有接收到任何信号 📡
-                 </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-      </AnimatePresence>
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.5, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.5, y: 10 }}
+              onClick={scrollToTop}
+              className="absolute bottom-4 -right-3 w-9 h-9 flex items-center justify-center bg-gradient-to-t from-purple-500 to-indigo-500 text-white rounded-full shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:-translate-y-1 transition-all z-50 group pointer-events-auto"
+              title="回到顶部"
+            >
+              <ArrowUp size={18} className="group-hover:-translate-y-1 transition-transform" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
