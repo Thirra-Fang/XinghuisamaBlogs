@@ -6,7 +6,21 @@ router = APIRouter()
 
 CURRENT_API_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_API_DIR, "..", ".."))
+REPO_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, ".."))
+DEFAULT_BLOG_PATH = os.path.join(REPO_ROOT, "XHBlogs")
 CONFIG_FILE = os.path.join(PROJECT_ROOT, "data", "deploy_config.json")
+
+
+def _resolve_blog_path(raw: str) -> str:
+    val = (raw or "").strip()
+    if not val:
+        return DEFAULT_BLOG_PATH if os.path.isdir(DEFAULT_BLOG_PATH) else ""
+    candidate = os.path.abspath(os.path.join(PROJECT_ROOT, val)) if not os.path.isabs(val) else val
+    if os.path.exists(candidate):
+        return candidate
+    if os.path.isdir(DEFAULT_BLOG_PATH):
+        return DEFAULT_BLOG_PATH
+    return candidate
 
 
 @router.get("/config")
@@ -15,10 +29,10 @@ async def get_deploy_config():
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return {"blogPath": data.get("blogPath", "")}
+                return {"blogPath": _resolve_blog_path(data.get("blogPath", ""))}
         except Exception:
             pass
-    return {"blogPath": ""}
+    return {"blogPath": _resolve_blog_path("")}
 
 
 @router.post("/config")

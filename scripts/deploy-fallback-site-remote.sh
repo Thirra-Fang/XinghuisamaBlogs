@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 # Build (optional) XHBlogs static out/ and rsync to each VPS /var/www/reality-fallback.
-# Reads SSH aliases from ~/.config/AboutVPS/hosts.conf. Step SSH with reconnect.
+# Reads SSH aliases from scripts/hosts.conf (or HOSTS_FILE override). Step SSH with reconnect.
 set -euo pipefail
 
-HOSTS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/AboutVPS"
-HOSTS_FILE="$HOSTS_DIR/hosts.conf"
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HOSTS_FILE="${HOSTS_FILE:-$SCRIPT_DIR/hosts.conf}"
 # Default: monorepo XHBlogs next to this scripts/ directory.
 DEFAULT_SITE_ROOT="$(cd "$SCRIPT_DIR/../XHBlogs" 2>/dev/null && pwd || true)"
 SITE_ROOT="${SITE_ROOT:-$DEFAULT_SITE_ROOT}"

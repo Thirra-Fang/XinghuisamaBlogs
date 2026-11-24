@@ -3,6 +3,7 @@ import os
 import shutil
 import signal
 import subprocess
+import sys
 import threading
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
@@ -12,8 +13,11 @@ router = APIRouter()
 CURRENT_API_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_API_DIR, "..", ".."))
 REPO_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, ".."))
-DEFAULT_DEPLOY_SCRIPT = os.path.abspath(
+DEFAULT_DEPLOY_SH = os.path.abspath(
     os.path.join(REPO_ROOT, "scripts", "deploy-fallback-site-remote.sh")
+)
+DEFAULT_DEPLOY_PY = os.path.abspath(
+    os.path.join(REPO_ROOT, "scripts", "deploy-fallback-site-remote.py")
 )
 
 SYNC_DIRS = ["posts", "chatters"]
@@ -27,6 +31,7 @@ SYNC_FILES = [
 
 _publish_lock = threading.Lock()
 _publish_proc = None
+_cancel_requested = False
 
 
 def is_safe_blog_dir(target_path):
@@ -71,15 +76,33 @@ def _ndjson(event: dict) -> str:
     return json.dumps(event, ensure_ascii=False) + "\n"
 
 
-def resolve_deploy_script() -> str:
+def resolve_blog_path(raw_path: str) -> str:
+    val = (raw_path or "").strip()
+    if not val:
+        return ""
+    return os.path.abspath(os.path.join(PROJECT_ROOT, val)) if not os.path.isabs(val) else val
+
+
+def resolve_deploy_command(target_path: str) -> list[str]:
     # Prefer XHBLOGS_DEPLOY_SCRIPT; ABOUTVPS_DEPLOY_SCRIPT kept as override alias.
     for key in ("XHBLOGS_DEPLOY_SCRIPT", "ABOUTVPS_DEPLOY_SCRIPT"):
         env_path = os.environ.get(key, "").strip()
         if env_path and os.path.isfile(env_path):
-            return env_path
-    if os.path.isfile(DEFAULT_DEPLOY_SCRIPT):
-        return DEFAULT_DEPLOY_SCRIPT
-    raise FileNotFoundError(f"找不到部署脚本: {DEFAULT_DEPLOY_SCRIPT}")
+            if env_path.endswith(".py"):
+                return [sys.executable, "-u", env_path, "--yes", "--site-root", target_path]
+            return ["bash", env_path, "--yes", "--site-root", target_path]
+
+    use_sh = (
+        os.name != "nt"
+        and shutil.which("bash") is not None
+        and shutil.which("rsync") is not None
+        and os.path.isfile(DEFAULT_DEPLOY_SH)
+    )
+    if use_sh:
+        return ["bash", DEFAULT_DEPLOY_SH, "--yes", "--site-root", target_path]
+    if os.path.isfile(DEFAULT_DEPLOY_PY):
+        return [sys.executable, "-u", DEFAULT_DEPLOY_PY, "--yes", "--site-root", target_path]
+    raise FileNotFoundError(f"找不到部署脚本: {DEFAULT_DEPLOY_PY}")
 
 
 @router.post("/check")
@@ -87,7 +110,7 @@ async def check_blog_path(request: Request):
     """检测目标路径是否合法且具备基本结构"""
     try:
         payload = await request.json()
-        target_path = payload.get("blogPath", "").strip()
+        target_path = resolve_blog_path(payload.get("blogPath", ""))
 
         if not target_path or not os.path.exists(target_path):
             return {"success": False, "message": "🚫 目标物理路径不存在，请检查输入！"}
@@ -115,7 +138,7 @@ async def execute_sync(request: Request):
     """执行物理覆盖同步"""
     try:
         payload = await request.json()
-        target_path = payload.get("blogPath", "").strip()
+        target_path = resolve_blog_path(payload.get("blogPath", ""))
         mirror_to_blog(target_path)
         return {"success": True, "message": "🎉 完美撒花！所有文章与配置已镜像覆盖至目标博客。"}
     except Exception as e:
@@ -126,18 +149,22 @@ async def execute_sync(request: Request):
 async def publish_remote(request: Request):
     """镜像到 XHBlogs，再流式执行 monorepo scripts/ 远程静态部署。"""
     payload = await request.json()
-    target_path = (payload.get("blogPath") or "").strip()
+    target_path = resolve_blog_path(payload.get("blogPath") or "")
 
     if not target_path:
         return {"success": False, "message": "blogPath 为空"}
 
     def event_stream():
-        global _publish_proc
+        global _publish_proc, _cancel_requested
 
-        if not _publish_lock.acquire(blocking=False):
+        acquired = _publish_lock.acquire(blocking=False)
+        if not acquired and _cancel_requested:
+            acquired = _publish_lock.acquire(timeout=3.0)
+        if not acquired:
             yield _ndjson({"type": "error", "message": "已有发布任务在进行中"})
             return
 
+        _cancel_requested = False
         try:
             yield _ndjson({"type": "phase", "phase": "mirror", "message": "正在镜像管理端内容到展示站…"})
             try:
@@ -149,18 +176,22 @@ async def publish_remote(request: Request):
             yield _ndjson({"type": "phase", "phase": "deploy", "message": "开始构建并以 rsync 增量同步到 VPS…"})
 
             try:
-                script = resolve_deploy_script()
+                cmd = resolve_deploy_command(target_path)
             except FileNotFoundError as e:
                 yield _ndjson({"type": "error", "message": str(e)})
                 return
 
-            script_dir = os.path.dirname(script)
-            cmd = ["bash", script, "--yes", "--site-root", target_path]
+            script_dir = os.path.dirname(cmd[2] if cmd[0] == sys.executable else cmd[1])
             yield _ndjson({"type": "log", "line": f"$ {' '.join(cmd)}"})
 
             env = os.environ.copy()
             env["FORCE_COLOR"] = "0"
             env["NO_COLOR"] = "1"
+            popen_kwargs = (
+                {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+                if os.name == "nt"
+                else {"start_new_session": True}
+            )
 
             try:
                 proc = subprocess.Popen(
@@ -172,7 +203,7 @@ async def publish_remote(request: Request):
                     encoding="utf-8",
                     errors="replace",
                     env=env,
-                    start_new_session=True,
+                    **popen_kwargs,
                 )
             except Exception as e:
                 yield _ndjson({"type": "error", "message": f"无法启动部署脚本: {e}"})
@@ -186,14 +217,15 @@ async def publish_remote(request: Request):
             code = proc.wait()
             _publish_proc = None
 
-            if code == 0:
-                yield _ndjson({"type": "done", "message": "同步并远程部署完成"})
-            elif code < 0:
+            if _cancel_requested or code < 0:
                 yield _ndjson({"type": "error", "message": "部署已取消"})
+            elif code == 0:
+                yield _ndjson({"type": "done", "message": "同步并远程部署完成"})
             else:
                 yield _ndjson({"type": "error", "message": f"部署失败，退出码 {code}"})
         finally:
             _publish_proc = None
+            _cancel_requested = False
             _publish_lock.release()
 
     return StreamingResponse(event_stream(), media_type="application/x-ndjson")
@@ -201,12 +233,25 @@ async def publish_remote(request: Request):
 
 @router.post("/publish-cancel")
 async def publish_cancel():
-    global _publish_proc
+    global _publish_proc, _cancel_requested
     proc = _publish_proc
     if proc is None or proc.poll() is not None:
         return {"success": False, "message": "当前没有进行中的发布任务"}
+    _cancel_requested = True
     try:
-        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+        if os.name == "nt":
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+        else:
+            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+        try:
+            proc.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            pass
         return {"success": True, "message": "已发送取消信号"}
     except Exception as e:
         try:

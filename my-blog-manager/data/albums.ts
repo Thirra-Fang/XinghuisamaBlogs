@@ -4,8 +4,21 @@ export interface Album { id: string; title: string; description: string; cover: 
 
 export const albums: Album[] = [
   {
+    "title": "皮格马利翁效应",
+    "description": "以非人之物触及人的灵魂、渴求与本质",
+    "cover": "https://img.thirra.com/blog/2026/11/24/0f126a6807bc-少女窗边落日油画.png",
+    "id": "album_1795542313151",
+    "photos": [
+      {
+        "url": "https://img.thirra.com/blog/2026/11/24/0f126a6807bc-少女窗边落日油画.png",
+        "caption": "少女正等待一位画家重新将其绘出"
+      }
+    ],
+    "date": "2026-11-24"
+  },
+  {
     "title": "感受，倾听，思考",
-    "description": "打牌，钓鱼，赛鸟",
+    "description": "可惜当你沉浸于此时，实质上背离了这个主旨",
     "id": "album_1795293069123",
     "photos": [
       {

@@ -32,6 +32,25 @@ function restore(src, dest) {
   fs.renameSync(src, dest);
 }
 
+function recoverInterruptedState() {
+  for (const p of parks) {
+    if (fs.existsSync(p.dest)) {
+      if (!fs.existsSync(p.src)) {
+        fs.mkdirSync(path.dirname(p.src), { recursive: true });
+        fs.renameSync(p.dest, p.src);
+        console.log(`[build-static] recovered parked ${path.relative(root, p.src)}`);
+      } else {
+        fs.rmSync(p.dest, { recursive: true, force: true });
+      }
+    }
+  }
+  const lockFile = path.join(root, '.next', 'lock');
+  if (fs.existsSync(lockFile)) {
+    fs.rmSync(lockFile, { force: true });
+    console.log('[build-static] removed stale .next/lock');
+  }
+}
+
 const parked = parks.map(() => false);
 
 process.on('exit', () => {
@@ -45,6 +64,7 @@ process.on('exit', () => {
 });
 
 try {
+  recoverInterruptedState();
   parks.forEach((p, i) => {
     parked[i] = park(p.src, p.dest);
   });
@@ -58,7 +78,8 @@ try {
     NEXT_PUBLIC_STATIC_EXPORT: '1',
   };
 
-  const r = spawnSync('npx', ['next', 'build'], {
+  const nextBin = path.join(root, 'node_modules', 'next', 'dist', 'bin', 'next');
+  const r = spawnSync(process.execPath, [nextBin, 'build'], {
     cwd: root,
     env,
     stdio: 'inherit',

@@ -9,8 +9,9 @@
 ```bash
 STATIC_EXPORT=1   # 由 npm run build:static / 脚本设置
 npm run build:static   # 产物 out/
-# 再跑 monorepo 脚本（hosts 仍读 ~/.config/AboutVPS/hosts.conf）：
-#   ../scripts/deploy-fallback-site-remote.sh --yes
+# 再跑 monorepo 脚本（hosts 读 ../scripts/hosts.conf）：
+#   ../scripts/deploy-fallback-site-remote.sh --yes   # Linux (rsync)
+#   python ../scripts/deploy-fallback-site-remote.py --yes  # Windows / 跨平台
 # 将 out/ 以 rsync 增量同步到各机 /var/www/reality-fallback（原子切换）
 ```
 

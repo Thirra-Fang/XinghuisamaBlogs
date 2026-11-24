@@ -8,7 +8,7 @@
 - **原项目**：[heiehiehi/XinghuisamaBlogs](https://github.com/heiehiehi/XinghuisamaBlogs)  
 - **许可**：[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（须署名、非商业）  
 
-请保留 LICENSE 与对上游的致谢。涉密配置（Cloudflare R2 等）放本机（如 `~/.config/AboutVPS/r2.env`），**不要**提交到 git。
+请保留 LICENSE 与对上游的致谢。涉密配置（Cloudflare R2 等）放本机（如 `~/.config/AboutVPS/r2.env` 或 `~/.config/r2.env`），**不要**提交到 git。
 
 语言：[中文](README.md) · [English](README_en.md)
 
@@ -18,7 +18,7 @@
 
 | 项 | 说明 |
 |----|------|
-| 公网形态 | `STATIC_EXPORT=1` → `out/` → monorepo [`scripts/deploy-fallback-site-remote.sh`](scripts/deploy-fallback-site-remote.sh) **rsync 增量**上线（原子切换；SSH hosts 仍读 AboutVPS）。**不是** Vercel 双轨 |
+| 公网形态 | `STATIC_EXPORT=1` → `out/` → monorepo [`scripts/deploy-fallback-site-remote.sh`](scripts/deploy-fallback-site-remote.sh) / [`deploy-fallback-site-remote.py`](scripts/deploy-fallback-site-remote.py) 上线（原子切换；SSH hosts 读 [`scripts/hosts.conf`](scripts/hosts.conf)）。**不是** Vercel 双轨 |
 | 已退役 | 说说（moments）、公网页音乐 / 灵境 / 弹幕 / Gitalk / 宠物 / AI |
 | 杂谈 | **展示站**：columns 瀑布流 + 玻璃卡 + framer 进出场（不包 PageTransition）。**控制台**：grid + 实色卡（避 WebKit 显示不全） |
 | 归档 | 仅矩阵网格；无「中枢链路」与视图切换滑块；标签栏满宽玻璃框 |
@@ -73,7 +73,7 @@ cd XHBlogs && npm ci && npm run build:static
 cd ../scripts && ./deploy-fallback-site-remote.sh --yes
 ```
 
-图床：配置 `~/.config/AboutVPS/r2.env` 后，在 **设置 → 图库** 批量上传，或编辑器图床工作台单张上传。细节见 AboutVPS `04`。
+图床：配置 `~/.config/AboutVPS/r2.env` 或 `~/.config/r2.env` 后，在 **设置 → 图库** 批量上传，或编辑器图床工作台单张上传。细节见 AboutVPS `04`。
 
 ---
 

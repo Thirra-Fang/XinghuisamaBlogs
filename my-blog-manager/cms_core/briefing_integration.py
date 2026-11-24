@@ -31,7 +31,11 @@ class BriefingIntegration:
         config_path = self.root / 'data/deploy_config.json'
         config = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
         configured = config.get('blogPath', '').strip()
-        return Path(configured).resolve() if configured else (self.root.parent / 'XHBlogs').resolve()
+        fallback = (self.root.parent / 'XHBlogs').resolve()
+        if not configured:
+            return fallback
+        candidate = (self.root / configured).resolve() if not Path(configured).is_absolute() else Path(configured).resolve()
+        return candidate if candidate.exists() else fallback
 
     async def __call__(self, scope, receive, send):
         try:

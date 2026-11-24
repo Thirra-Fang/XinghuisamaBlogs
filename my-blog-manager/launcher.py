@@ -143,7 +143,8 @@ def main():
 
     time.sleep(1.5)
 
-    os.environ.setdefault("PYWEBVIEW_GUI", "gtk")
+    if os.name != "nt":
+        os.environ.setdefault("PYWEBVIEW_GUI", "gtk")
 
     api = WindowAPI()
     window = webview.create_window(

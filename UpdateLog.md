@@ -1,5 +1,9 @@
 ## Unreleased
 
+- **Windows + CachyOS 跨平台适配**：
+  - 服务器别名清单迁入仓库 `scripts/hosts.conf`；`deploy-fallback-site-remote.sh` 与新增 `scripts/deploy-fallback-site-remote.py` 均从此读取（Linux 走 `rsync`，Windows 走 SHA256 增量 `tar-over-ssh`）。
+  - `picbed.py` 支持优先 `~/.config/AboutVPS/r2.env`，不存在时回退 `~/.config/r2.env`。
+  - `deploy_config.json` 改用相对路径 `../XHBlogs`；`launcher.py`、`deploy.py`、`sync.py`（含 `taskkill` 取消与锁等待）、`build-static.mjs`（直接调用本地 Next.js CLI + 中断自愈 `.static-park` / `.next/lock`）适配 Windows，同时保持 CachyOS 原有流程不变。
 - **归档排版**：去掉「中枢链路」与视图切换滑块，仅保留矩阵网格；标签栏占满玻璃框。
 - **项目链接类型**：`githubUrl` 重命名为通用 `url`；新增 `linkType: github | pan`；网盘用原图轮廓 `pan-drive.png` mask 图标（不反相）；控制台可切换类型。文档（AboutVPS `04`、README）同步校准。
 - **控制台杂谈列表**：去掉瀑布流 / 进出场动画与卡片 `backdrop-blur`，改回 grid + 实色卡，避免 WebKit 显示不全；展示站动画保留。

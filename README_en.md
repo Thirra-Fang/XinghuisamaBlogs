@@ -8,7 +8,7 @@ A glassmorphism personal blog built with Next.js: **XHBlogs** is the public site
 - **Upstream**: [heiehiehi/XinghuisamaBlogs](https://github.com/heiehiehi/XinghuisamaBlogs)  
 - **License**: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (attribution, non-commercial)
 
-Keep LICENSE and credit. Put secrets (e.g. Cloudflare R2) on the machine only (`~/.config/AboutVPS/r2.env`), never in git.
+Keep LICENSE and credit. Put secrets (e.g. Cloudflare R2) on the machine only (`~/.config/AboutVPS/r2.env` or `~/.config/r2.env`), never in git.
 
 Languages: [中文](README.md) · [English](README_en.md)
 
@@ -18,7 +18,7 @@ Languages: [中文](README.md) · [English](README_en.md)
 
 | Item | Behavior |
 |------|----------|
-| Public site | `STATIC_EXPORT=1` → `out/` → monorepo [`scripts/deploy-fallback-site-remote.sh`](scripts/deploy-fallback-site-remote.sh) (**incremental rsync**, atomic swap). **Not** Vercel dual-track |
+| Public site | `STATIC_EXPORT=1` → `out/` → monorepo [`scripts/deploy-fallback-site-remote.sh`](scripts/deploy-fallback-site-remote.sh) / [`deploy-fallback-site-remote.py`](scripts/deploy-fallback-site-remote.py) (atomic swap; hosts from [`scripts/hosts.conf`](scripts/hosts.conf)). **Not** Vercel dual-track |
 | Removed | Moments, public music / tree lab / danmaku / Gitalk / pets / AI |
 | Chatter | **Public**: CSS columns masonry + glass + framer enter/exit (no `PageTransition`). **Console**: grid + solid cards (WebKit-safe) |
 | Archive | Matrix grid only; hub-chain timeline and view toggle removed; tag bar fills the glass strip |
@@ -66,7 +66,7 @@ cd XHBlogs && npm ci && npm run build:static
 cd ../scripts && ./deploy-fallback-site-remote.sh --yes
 ```
 
-Picbed: `~/.config/AboutVPS/r2.env`, then Settings → Gallery (batch) or editor upload. Details in AboutVPS `04`.
+Picbed: `~/.config/AboutVPS/r2.env` or `~/.config/r2.env`, then Settings → Gallery (batch) or editor upload. Details in AboutVPS `04`.
 
 ---
 

@@ -15,9 +15,24 @@ from fastapi import APIRouter, File, UploadFile
 
 router = APIRouter()
 
-CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "AboutVPS"
+CONFIG_ROOT = Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+CONFIG_DIR = CONFIG_ROOT / "AboutVPS"
 R2_ENV_PATH = CONFIG_DIR / "r2.env"
 MANIFEST_PATH = CONFIG_DIR / "r2-uploads.json"
+
+
+def _resolve_r2_paths() -> tuple[Path, Path]:
+    override = os.environ.get("R2_ENV_PATH", "").strip()
+    if override:
+        p = Path(override).expanduser()
+        return p, p.parent / "r2-uploads.json"
+    aboutvps_env = CONFIG_ROOT / "AboutVPS" / "r2.env"
+    if aboutvps_env.is_file():
+        return aboutvps_env, aboutvps_env.parent / "r2-uploads.json"
+    direct_env = CONFIG_ROOT / "r2.env"
+    if direct_env.is_file():
+        return direct_env, direct_env.parent / "r2-uploads.json"
+    return R2_ENV_PATH, MANIFEST_PATH
 
 
 def _parse_env_file(path: Path) -> dict[str, str]:
@@ -34,7 +49,8 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 
 def _load_r2_config() -> dict[str, str] | None:
-    cfg = _parse_env_file(R2_ENV_PATH)
+    env_path, _ = _resolve_r2_paths()
+    cfg = _parse_env_file(env_path)
     required = (
         "R2_ACCESS_KEY_ID",
         "R2_SECRET_ACCESS_KEY",
@@ -48,23 +64,25 @@ def _load_r2_config() -> dict[str, str] | None:
 
 
 def _load_manifest() -> list[dict]:
-    if not MANIFEST_PATH.is_file():
+    _, manifest_path = _resolve_r2_paths()
+    if not manifest_path.is_file():
         return []
     try:
-        data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
         return data if isinstance(data, list) else []
     except Exception:
         return []
 
 
 def _save_manifest(items: list[dict]) -> None:
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    MANIFEST_PATH.write_text(
+    _, manifest_path = _resolve_r2_paths()
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
         json.dumps(items, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     try:
-        os.chmod(MANIFEST_PATH, 0o600)
+        os.chmod(manifest_path, 0o600)
     except OSError:
         pass
 
@@ -91,14 +109,15 @@ def _s3_client(cfg: dict[str, str]):
 
 @router.get("/status")
 async def r2_status():
+    env_path, manifest_path = _resolve_r2_paths()
     cfg = _load_r2_config()
     if not cfg:
         return {
             "success": False,
             "configured": False,
-            "message": f"未找到完整 R2 配置，请填写 {R2_ENV_PATH}",
-            "env_path": str(R2_ENV_PATH),
-            "manifest_path": str(MANIFEST_PATH),
+            "message": f"未找到完整 R2 配置，请填写 {env_path}",
+            "env_path": str(env_path),
+            "manifest_path": str(manifest_path),
             "count": 0,
         }
     items = _load_manifest()
@@ -108,17 +127,18 @@ async def r2_status():
         "message": f"R2 已配置 → {cfg['R2_PUBLIC_BASE']}（清单 {len(items)} 条，不 List bucket）",
         "public_base": cfg["R2_PUBLIC_BASE"].rstrip("/"),
         "bucket": cfg["R2_BUCKET"],
-        "env_path": str(R2_ENV_PATH),
-        "manifest_path": str(MANIFEST_PATH),
+        "env_path": str(env_path),
+        "manifest_path": str(manifest_path),
         "count": len(items),
     }
 
 
 @router.post("/test")
 async def test_r2_connection():
+    env_path, _ = _resolve_r2_paths()
     cfg = _load_r2_config()
     if not cfg:
-        return {"success": False, "message": f"缺少 {R2_ENV_PATH} 或字段不完整"}
+        return {"success": False, "message": f"缺少 {env_path} 或字段不完整"}
     try:
         client = _s3_client(cfg)
         # HeadBucket is Class A; only used for explicit user test — not on every open.
@@ -140,11 +160,12 @@ async def list_uploads():
 
 @router.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
+    env_path, _ = _resolve_r2_paths()
     cfg = _load_r2_config()
     if not cfg:
         return {
             "success": False,
-            "message": f"未配置 R2。请编辑 {R2_ENV_PATH}（参考同目录 r2.env.example）",
+            "message": f"未配置 R2。请编辑 {env_path}（参考同目录 r2.env.example）",
         }
 
     content = await file.read()
