@@ -13,3 +13,8 @@ description: ''
 
 微光透过薄暮，给你走遍黑暗的理由  
 Shimmering light through the twilight‚ search the darkness by your side․
+
+  
+‍
+
+主页背景图作者：[**Moka**](https://home.gamer.com.tw/moka92)，原图：<https://forum.gamer.com.tw/C.php?bsn=47245&snA=1131>

@@ -23,7 +23,7 @@ export const friendsData: Friend[] = [
     "name": "XingHuiSamaの宝藏之地",
     "url": "https://www.xinghuisama.top",
     "avatar": "https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
-    "description": "今天我也要学习吗",
+    "description": "感谢这一位分享的博客项目！我的这个个人主页也是ta的项目构建的",
     "themeColor": "#6366f1"
   }
 ];

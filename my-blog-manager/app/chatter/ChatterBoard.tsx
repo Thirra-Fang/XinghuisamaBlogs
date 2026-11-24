@@ -170,10 +170,8 @@ export default function ChatterBoard({ chatters: initialChatters }: { chatters: 
         </div>
       </div>
 
-      {/* 网格布局：避免 CSS columns + backdrop-blur 在 WebKit 下卡透明 */}
+      {/* 控制台用 grid + 实色卡：避免 columns/blur/列表动画在 WebKit 下显示不全 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {/* 新增项 */}
         <div>
           <Link href="/editor?type=chatter"
             className="group flex flex-col items-center justify-center min-h-[250px] rounded-[32px] border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/10 dark:bg-slate-800/10 hover:bg-white/30 dark:hover:bg-indigo-500/5 hover:border-indigo-500 transition-all duration-500"

@@ -5,7 +5,7 @@ import {siteConfig} from "@/siteConfig";
 
 export const metadata = {
   title: "项目矩阵 | " + siteConfig.title,
-  description: "开源项目与代码仓库展示",
+  description: "开源项目、代码仓库与作品集展示",
 };
 
 export default function ProjectsPage() {

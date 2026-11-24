@@ -18,6 +18,8 @@ npm run build:static   # 产物 out/
 
 改本站或控制台行为时，请同步更新该 `04`、仓库根 `README.md` fork 表与 `UpdateLog.md`。
 
+杂谈列表为本站瀑布流动画；控制台侧故意用 grid 实色卡。项目数据为 `url` + `linkType`（`github` | `pan`），网盘图标见 `public/icons/pan-drive.png`。
+
 ## 本地开发
 
 需要 Node.js **≥ 20.9**。
