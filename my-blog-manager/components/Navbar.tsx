@@ -18,6 +18,7 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
   const [isOpBoxOpen, setIsOpBoxOpen] = useState(false);
 
   const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [syncMode, setSyncMode] = useState<'local' | 'remote'>('local');
   const [targetBlogPath, setTargetBlogPath] = useState("");
   const [publishOpen, setPublishOpen] = useState(false);
   const [publishStatus, setPublishStatus] = useState<PublishStatus>('idle');
@@ -156,11 +157,12 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
       }
     };
 
-  const handleSyncBlogClick = () => {
+  const handleOpenSyncModal = (mode: 'local' | 'remote') => {
     if (!targetBlogPath) {
        const fallback = storageGet('targetBlogPath') || "";
        setTargetBlogPath(fallback);
     }
+    setSyncMode(mode);
     setIsOpBoxOpen(false);
     setSyncModalOpen(true);
   };
@@ -169,7 +171,11 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
     setPublishLogs(prev => [...prev, line]);
   };
 
-  const executeSyncBlog = async () => {
+  const executeSyncAction = async () => {
+    const isLocal = syncMode === 'local';
+    const endpoint = isLocal ? '/api/sync/sync-local-build' : '/api/sync/upload-remote';
+    const actionLabel = isLocal ? '本地同步与打包' : '远程增量上传';
+
     setSyncModalOpen(false);
     setPublishOpen(true);
     setPublishStatus('running');
@@ -179,7 +185,7 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
     try {
       const apiBase = await getApiBase();
-      const res = await fetch(`${apiBase}/api/sync/publish-remote`, {
+      const res = await fetch(`${apiBase}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ blogPath: targetBlogPath })
@@ -188,7 +194,7 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
       if (!res.ok || !res.body) {
         setPublishStatus('error');
         appendLog(`请求失败: HTTP ${res.status}`);
-        showToast("无法启动同步与远程部署", "error");
+        showToast(`无法启动${actionLabel}`, "error");
         setIsPublishing(false);
         return;
       }
@@ -356,14 +362,24 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
 
                     <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={handleSyncBlogClick}
+                        onClick={() => handleOpenSyncModal('local')}
                         disabled={isPublishing}
                         className="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
                       >
-                        🔄 同步 Blog
+                        🔄 本地同步
                       </button>
                       <button onClick={handleUpdateLocal} className="py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 transition-colors">
                         🚀 更新本地
+                      </button>
+                    </div>
+
+                    <div className="mt-2">
+                      <button
+                        onClick={() => handleOpenSyncModal('remote')}
+                        disabled={isPublishing}
+                        className="w-full py-2.5 rounded-xl bg-sky-500 text-white text-xs font-black shadow-lg shadow-sky-500/30 hover:bg-sky-600 transition-colors disabled:opacity-50"
+                      >
+                        ☁️ 远程上传
                       </button>
                     </div>
 
@@ -412,17 +428,36 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
               <div className="w-16 h-16 bg-amber-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <AlertTriangle className="text-amber-500" size={32} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">同步并部署到 VPS</h3>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+                {syncMode === 'local' ? '本地同步与打包' : '远程增量上传到 VPS'}
+              </h3>
               <p className="text-sm text-slate-500 mb-8 leading-relaxed text-balance">
-                将管理端数据覆盖到<br />
-                <span className="font-bold text-amber-500 break-all">{targetBlogPath}</span>
-                <br />
-                然后静态构建，并以 rsync 增量同步到远端（staging 后原子切换）。
-                <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">会清空目标站旧文章/配置；构建仍可能较久，上传仅传变更。</span>
+                {syncMode === 'local' ? (
+                  <>
+                    将管理端数据覆盖到<br />
+                    <span className="font-bold text-amber-500 break-all">{targetBlogPath}</span>
+                    <br />
+                    并在本地执行静态打包生成 <code className="font-mono text-xs">out/</code>（不上传远端）。
+                    <span className="text-xs opacity-80 text-red-400 font-bold mt-2 block">会清空目标站旧文章/配置；打包完成后可再点击「远程上传」。</span>
+                  </>
+                ) : (
+                  <>
+                    跳过重新打包，直接将<br />
+                    <span className="font-bold text-sky-500 break-all">{targetBlogPath}/out</span>
+                    <br />
+                    按内容校验和增量上传到远端 VPS 并原子切换。
+                    <span className="text-xs opacity-80 text-slate-400 font-bold mt-2 block">请确保已先执行「本地同步」生成最新 out/。</span>
+                  </>
+                )}
               </p>
               <div className="flex gap-3">
                 <button onClick={() => setSyncModalOpen(false)} className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-xs font-black uppercase transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">取消</button>
-                <button onClick={executeSyncBlog} className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-amber-500/30 transition-all">确认同步</button>
+                <button
+                  onClick={executeSyncAction}
+                  className={`flex-1 py-4 text-white rounded-2xl text-xs font-black uppercase shadow-lg transition-all ${syncMode === 'local' ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/30' : 'bg-sky-500 hover:bg-sky-600 shadow-sky-500/30'}`}
+                >
+                  {syncMode === 'local' ? '确认本地同步' : '确认远程上传'}
+                </button>
               </div>
             </motion.div>
           </div>
@@ -436,7 +471,9 @@ export default function Navbar({ previewOnly = false, compact = false }: { previ
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/50 p-6">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white">同步与远程部署</h3>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                    {syncMode === 'local' ? '本地同步与静态打包' : '远程增量上传'}
+                  </h3>
                   <p className="text-xs text-slate-500 mt-1">
                     状态：{publishStatus === 'running' ? '进行中' : publishStatus === 'done' ? '成功' : publishStatus === 'error' ? '失败' : '—'}
                     {publishPhase ? ` · ${publishPhase}` : ''}

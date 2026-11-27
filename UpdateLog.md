@@ -1,5 +1,8 @@
 ## Unreleased
 
+- **控制台「同步 Blog」拆分与增量上传优化**：
+  - 将操作栏原「同步 Blog」拆分为 **本地同步**（原位：镜像到 `XHBlogs` + 本地静态打包生成 `out/`）与 **远程上传**（位于本地同步与 `git commit message` 输入框之间：`--skip-build` 跳过打包直接增量上传 VPS），新增 `/api/sync/sync-local-build` 与 `/api/sync/upload-remote` 接口（兼容 Linux 与 Windows）。
+  - `scripts/deploy-fallback-site-remote.sh` 与 `scripts/deploy-fallback-site-remote.py` 的 `rsync` 参数由 `-az` 改为 `-azc`（按文件内容校验和比对），避免每次打包刷新 `mtime` 导致未改动的大静态资源重复传输。
 - **Markdown 中文标点加粗/斜体修复**：`XHBlogs` 与 `my-blog-manager` 的 `renderMarkdown.mjs` 接入 `remark-cjk-friendly` 及混合英文+中文弯引号加粗兜底插件（仅作用于纯文本节点，不影响代码与公式），修复 `**“需求”**有**“欲望”**`、`ai**“自己来选择”**` 等紧邻中文标点时露出 `**` 或错位加粗的问题；控制台编辑器 `RichTextEditor.tsx` 接入 `markdown-it-cjk-friendly` 以修复粘贴 Markdown 时的解析；补充 `renderMarkdown.test.mjs` 单元测试。
 - **Windows + CachyOS 跨平台适配**：
   - 服务器别名清单迁入仓库 `scripts/hosts.conf`；`deploy-fallback-site-remote.sh` 与新增 `scripts/deploy-fallback-site-remote.py` 均从此读取（Linux 走 `rsync`，Windows 走 SHA256 增量 `tar-over-ssh`）。

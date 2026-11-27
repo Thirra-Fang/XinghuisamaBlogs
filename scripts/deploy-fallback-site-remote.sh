@@ -237,7 +237,7 @@ echo seed_ok
 
     set +e
     rsync_out=$(
-      rsync -az --delete --info=stats2 \
+      rsync -azc --delete --info=stats2 \
         -e "$ssh_e" \
         "$OUT_DIR"/ "${H_NAME}:${REMOTE_NEXT}/" \
         2>&1

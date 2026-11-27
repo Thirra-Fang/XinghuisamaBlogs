@@ -26,7 +26,7 @@ Languages: [中文](README.md) · [English](README_en.md)
 | Back button | Post → `/timeline`, chatter detail → `/chatter`; none on projects/friends |
 | Profile bio | Newlines honored; fills the card width |
 | Markdown | Write `$...$` / `$$...$$` in TipTap; KaTeX on detail pages; plain-text list excerpts; CJK punctuation adjacent to bold/italic supported in both site & editor (`remark-cjk-friendly` + `markdown-it-cjk-friendly`) |
-| Console | **Sync Blog** = mirror `XHBlogs` + remote static deploy; **git push** = monorepo root; R2 picbed (batch upload in Settings → Gallery) |
+| Console | **Local Sync** = mirror `XHBlogs` + local static build (`out/`); **Remote Upload** = `--skip-build` incremental deploy (Linux `rsync -azc` / Windows SHA256); **git push** = monorepo root; R2 picbed (batch upload in Settings → Gallery) |
 | Ops source of truth | [AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md) |
 
 See [UpdateLog.md](UpdateLog.md). When changing features, update AboutVPS `04`, this README, and UpdateLog together.

@@ -238,7 +238,7 @@ def _upload_via_rsync(
             return False
 
         proc = subprocess.run(
-            ["rsync", "-az", "--delete", "--info=stats2", "-e", ssh_e, f"{out_dir}/", f"{alias}:{REMOTE_NEXT}/"],
+            ["rsync", "-azc", "--delete", "--info=stats2", "-e", ssh_e, f"{out_dir}/", f"{alias}:{REMOTE_NEXT}/"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,

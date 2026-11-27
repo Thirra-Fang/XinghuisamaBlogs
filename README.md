@@ -26,7 +26,7 @@
 | 返回上一级 | 文章 → `/timeline`，杂谈详情 → `/chatter`；项目 / 友链无该按钮 |
 | 首页简介 | `bio` 支持换行并撑满名片栏 |
 | Markdown | TipTap 写 `$...$` / `$$...$$`；详情 KaTeX；列表摘要为纯文本；展示页与编辑器均支持中文标点紧邻加粗/斜体（`remark-cjk-friendly` + `markdown-it-cjk-friendly`） |
-| 控制台 | **同步 Blog** = 镜像 `XHBlogs` + 远程静态部署；**git推送** = monorepo 根；图床 R2（设置 → 图库可批量上传） |
+| 控制台 | **本地同步** = 镜像 `XHBlogs` + 本地静态打包（`out/`）；**远程上传** = `--skip-build` 增量上传到 VPS（Linux `rsync -azc` / Windows SHA256）；**git推送** = monorepo 根；图床 R2（设置 → 图库可批量上传） |
 | 运维权威 | 旁路仓库 [AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md) |
 
 变更记在 [UpdateLog.md](UpdateLog.md)。改功能时请同步更新 AboutVPS `04`、本 README 与 UpdateLog。
@@ -63,8 +63,9 @@ Windows 可用目录内 `Start.bat`。首次会准备 `.venv` 与依赖。
 
 1. 在控制台编辑文章 / 杂谈 / 友链 / 项目等，加入操作队列  
 2. 顶栏 **更新本地**  
-3. **同步 Blog** → 镜像到 `XHBlogs` 并执行远程静态部署（日志弹窗）  
-4. 需要备份源码时：操作栏 **git推送**（只推 monorepo 根，**不等于**上线）
+3. **本地同步** → 镜像到 `XHBlogs` 并本地静态打包生成 `out/`（日志弹窗）  
+4. **远程上传** → 跳过打包（`--skip-build`），按内容校验和增量上传 `out/` 到 VPS 并原子切换  
+5. 需要备份源码时：操作栏 **git推送**（只推 monorepo 根，**不等于**上线）
 
 CLI 等价：
 
