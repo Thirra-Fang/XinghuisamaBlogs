@@ -25,7 +25,7 @@
 | 项目 | `url` + `linkType: github \| pan`；网盘用原图轮廓 `public/icons/pan-drive.png` mask 图标 |
 | 返回上一级 | 文章 → `/timeline`，杂谈详情 → `/chatter`；项目 / 友链无该按钮 |
 | 首页简介 | `bio` 支持换行并撑满名片栏 |
-| Markdown | TipTap 写 `$...$` / `$$...$$`；详情 KaTeX；列表摘要为纯文本 |
+| Markdown | TipTap 写 `$...$` / `$$...$$`；详情 KaTeX；列表摘要为纯文本；展示页与编辑器均支持中文标点紧邻加粗/斜体（`remark-cjk-friendly` + `markdown-it-cjk-friendly`） |
 | 控制台 | **同步 Blog** = 镜像 `XHBlogs` + 远程静态部署；**git推送** = monorepo 根；图床 R2（设置 → 图库可批量上传） |
 | 运维权威 | 旁路仓库 [AboutVPS/04-静态展示站.md](../AboutVPS/04-静态展示站.md) |
 

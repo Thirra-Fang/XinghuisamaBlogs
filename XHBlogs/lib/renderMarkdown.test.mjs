@@ -103,6 +103,20 @@ test('preserves GFM tables and displays HTML examples as code', async () => {
   assert.doesNotMatch(html, /<img\b/);
 });
 
+test('parses CJK punctuation adjacent to bold and italic delimiters', async () => {
+  const html = await renderMarkdown([
+    '人类有**“需求”**有**“欲望”**，在此基础上',
+    '作为**“工具”**时相对于人类',
+    '让一个ai**“自己来选择”**表达',
+    '这是**（测试）**和*“斜体”*内容',
+  ].join('\n\n'));
+  assert.match(html, /人类有<strong>“需求”<\/strong>有<strong>“欲望”<\/strong>，在此基础上/);
+  assert.match(html, /作为<strong>“工具”<\/strong>时相对于人类/);
+  assert.match(html, /让一个ai<strong>“自己来选择”<\/strong>表达/);
+  assert.match(html, /这是<strong>（测试）<\/strong>和<em>“斜体”<\/em>内容/);
+  assert.doesNotMatch(html, /\*\*/);
+});
+
 test('all three routes use the shared sanitizer and retain their newline preprocessing', async () => {
   for (const path of ['app/about/page.tsx', 'app/chatter/[slug]/page.tsx', 'app/posts/[slug]/page.tsx']) {
     const source = await readFile(path, 'utf8');

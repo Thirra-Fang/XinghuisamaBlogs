@@ -1,5 +1,6 @@
 ## Unreleased
 
+- **Markdown 中文标点加粗/斜体修复**：`XHBlogs` 与 `my-blog-manager` 的 `renderMarkdown.mjs` 接入 `remark-cjk-friendly` 及混合英文+中文弯引号加粗兜底插件（仅作用于纯文本节点，不影响代码与公式），修复 `**“需求”**有**“欲望”**`、`ai**“自己来选择”**` 等紧邻中文标点时露出 `**` 或错位加粗的问题；控制台编辑器 `RichTextEditor.tsx` 接入 `markdown-it-cjk-friendly` 以修复粘贴 Markdown 时的解析；补充 `renderMarkdown.test.mjs` 单元测试。
 - **Windows + CachyOS 跨平台适配**：
   - 服务器别名清单迁入仓库 `scripts/hosts.conf`；`deploy-fallback-site-remote.sh` 与新增 `scripts/deploy-fallback-site-remote.py` 均从此读取（Linux 走 `rsync`，Windows 走 SHA256 增量 `tar-over-ssh`）。
   - `picbed.py` 支持优先 `~/.config/AboutVPS/r2.env`，不存在时回退 `~/.config/r2.env`。

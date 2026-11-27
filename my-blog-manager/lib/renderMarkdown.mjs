@@ -1,5 +1,6 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
@@ -76,11 +77,55 @@ function openExternalLinks() {
   };
 }
 
+// Fallback for mixed Latin + curly-quote bold like `ai**“自己来选择”**表达` that
+// remark-cjk-friendly leaves as literal `**` because `i` is ASCII and `“` is general punctuation.
+// Runs on mdast text nodes only, so code blocks, inline code, and math are never touched.
+function remarkFixMixedQuoteStrong() {
+  const re = /\*\*([“‘][^*\n]+?[”’])\*\*/g;
+  return (tree) => {
+    function visit(node) {
+      if (!node.children) return;
+      const nextChildren = [];
+      for (const child of node.children) {
+        if (child.type === 'text' && child.value.includes('**')) {
+          re.lastIndex = 0;
+          let last = 0;
+          let m;
+          let matched = false;
+          while ((m = re.exec(child.value)) !== null) {
+            matched = true;
+            if (m.index > last) {
+              nextChildren.push({ type: 'text', value: child.value.slice(last, m.index) });
+            }
+            nextChildren.push({
+              type: 'strong',
+              children: [{ type: 'text', value: m[1] }],
+            });
+            last = m.index + m[0].length;
+          }
+          if (matched) {
+            if (last < child.value.length) {
+              nextChildren.push({ type: 'text', value: child.value.slice(last) });
+            }
+            continue;
+          }
+        }
+        visit(child);
+        nextChildren.push(child);
+      }
+      node.children = nextChildren;
+    }
+    visit(tree);
+  };
+}
+
 export async function renderMarkdown(content) {
   const processed = await unified()
     .use(remarkParse)
+    .use(remarkCjkFriendly)
     .use(remarkGfm)
     .use(remarkMath)
+    .use(remarkFixMixedQuoteStrong)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeSlug)

@@ -18,6 +18,7 @@ import TaskItem from '@tiptap/extension-task-item';
 
 // 🌟 引入 Markdown 插件
 import { Markdown } from 'tiptap-markdown';
+import markdownItCjkFriendly from 'markdown-it-cjk-friendly';
 
 // 🌟 引入 Tiptap 表格扩展（配合 tiptap-markdown 解析粘贴的 GFM |表格|）
 import { Table } from '@tiptap/extension-table';
@@ -60,16 +61,19 @@ const FontSize = Extension.create({
   addCommands() { return { setFontSize: (fontSize: string) => ({ chain }) => chain().setMark('textStyle', { fontSize }).run() }; },
 });
 
-// 🌟 启用 markdown-it 的 GFM 表格规则：tiptap-markdown 构造 markdown-it 时默认未启用 table 规则，
-//    这里通过其官方 parse.setup(md) 钩子（每次 parse 都会调用）补上 enable('table')，
-//    这样粘贴进来的 |表格| 才会被解析成 <table>，再映射到 Tiptap 表格节点。
+// 🌟 启用 markdown-it 的 GFM 表格规则与 CJK 标点友好强调规则：
+//    1) tiptap-markdown 构造 markdown-it 时默认未启用 table 规则，补上 enable('table') 以解析 |表格|；
+//    2) 注册 markdown-it-cjk-friendly，修复 **“需求”**有**“欲望”** 等中文标点紧邻加粗/斜体时的解析异常。
 const MarkdownTableRule = Extension.create({
   name: 'markdownTableRule',
   addStorage() {
     return {
       markdown: {
         parse: {
-          setup(md: any) { md.enable('table'); },
+          setup(md: any) {
+            md.enable('table');
+            md.use(markdownItCjkFriendly);
+          },
         },
       },
     };
